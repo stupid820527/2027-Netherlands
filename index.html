@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>荷蘭雙人行 2027</title>
+<meta name="theme-color" content="#FFF8F1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="荷蘭雙人行">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<style>html{padding-top:env(safe-area-inset-top,0px)}body{margin:0;-webkit-text-size-adjust:100%}img{max-width:100%}[hidden]{display:none!important}</style>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=Nunito:wght@700;800;900&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<style>
+/* Layout: pastel travel-planner app — day cards in candy colors, emoji bubbles on a dotted timeline, bottom tab bar. Deliberately single light theme (the user asked for a cute look). */
+:root{
+  --bg:#FFF8F1; --card:#FFFFFF; --ink:#4A3A33; --muted:#9A8579; --line:#F1E3D6;
+  --pink:#FF8FA3; --pink-soft:#FFE4EA; --orange:#FF9F5A; --orange-soft:#FFE9D9; --yellow-soft:#FFF3C4;
+  --mint:#7CC79B; --mint-soft:#DFF3E6; --blue:#5B8DEF; --blue-soft:#E1ECFF; --lilac-soft:#EEE6FF;
+  --warn:#D9653B; --warn-soft:#FFF0E8;
+  --d1:#FFE1D2; --d2:#FFF0B8; --d3:#D9F2DF; --d4:#DCE8FF; --d5:#FCE0F0; --d6:#E8E2FF;
+  --f-cute:"Huninn","Noto Sans TC","PingFang TC",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-num:"Nunito","Noto Sans TC",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-block:0 96px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:720px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-cute);font-weight:400;margin:0;text-wrap:balance}
+a{color:var(--blue)}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2.5px solid var(--pink);outline-offset:2px}
+.en{font:700 13px var(--f-num);color:var(--muted);line-height:1.3}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px 8px;display:flex;align-items:center;gap:10px}
+.fly{display:inline-flex;align-items:center;gap:5px;background:var(--card);box-shadow:0 2px 0 var(--line);border-radius:999px;padding:1px 9px;font-size:15px;vertical-align:3px;margin-left:4px}
+.flag{width:22px;height:15px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.12);display:block}
+.fly i{font-style:normal;display:inline-block;animation:fly 2.4s ease-in-out infinite}
+@keyframes fly{0%,100%{transform:translateX(-2px) rotate(-6deg)}50%{transform:translateX(3px) translateY(-2px) rotate(4deg)}}
+@media (prefers-reduced-motion:reduce){.fly i{animation:none}}
+.logo{width:42px;height:42px;border-radius:14px;background:var(--orange-soft);display:grid;place-items:center;font-size:24px;flex-shrink:0}
+.brand{flex:1;min-width:0}
+.brand b{font-family:var(--f-cute);font-weight:400;font-size:20px;display:block;line-height:1.2}
+.brand span{font-size:12.5px;color:var(--muted)}
+.brand span em{font-style:normal;color:var(--pink);font:900 13px var(--f-num)}
+.mode{border:0;border-radius:999px;background:var(--card);box-shadow:0 2px 0 var(--line);padding:6px 12px;font-size:13px;color:var(--ink);flex-shrink:0}
+.mode[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:none}
+.chips button{flex:0 0 auto;border:0;border-radius:16px;padding:6px 12px;background:var(--card);box-shadow:0 2px 0 var(--line);text-align:center;line-height:1.2;color:var(--ink)}
+.chips button b{display:block;font:900 14px var(--f-num)}
+.chips button small{font-size:11px;color:var(--muted)}
+.chips button[aria-selected="true"]{background:var(--c,var(--pink-soft));box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.day{background:var(--card);border-radius:24px;box-shadow:0 3px 0 var(--line);margin:8px 0 18px;overflow:hidden}
+.day-top{background:var(--c);padding:16px 16px 14px}
+.day-top .badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border-radius:999px;padding:2px 12px 2px 4px;font:900 14px var(--f-num)}
+.day-top .badge i{font-style:normal;background:var(--ink);color:#fff;border-radius:999px;padding:0 9px}
+.day-top h2{font-size:21px;margin-top:8px;line-height:1.35}
+.day-top .where{font-size:13px;color:#7a665c;margin-top:2px}
+.day-top p{margin:8px 0 0;font-size:14px}
+.day-body{padding:12px 14px 16px}
+.edit-bar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:6px}
+.pillbtn{border:0;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:700;background:var(--yellow-soft);color:var(--ink)}
+.pillbtn.on{background:var(--ink);color:#fff}
+.pillbtn.add{background:var(--mint-soft)}
+.meals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 12px}
+@media (max-width:460px){.meals{grid-template-columns:1fr}}
+.meal{background:var(--bg);border-radius:16px;padding:9px 11px;min-width:0}
+.meal .lb{font-size:12px;color:var(--muted)}
+.meal b{display:block;font-family:var(--f-cute);font-weight:400;font-size:15px;line-height:1.35}
+.meal .ty{font-size:12.5px}
+.meal .pp{font:800 12.5px var(--f-num);color:var(--orange)}
+.meal .mn{font-size:12px;color:var(--muted);margin-top:2px}
+.meal a{font-size:12px}
+.tl{list-style:none;margin:0;padding:0;position:relative}
+.tl::before{content:"";position:absolute;left:21px;top:20px;bottom:20px;border-left:2.5px dotted var(--line)}
+.it{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr) 96px;gap:10px;padding:9px 0}
+.it.nopic{grid-template-columns:44px minmax(0,1fr)}
+.thumb{width:96px;height:96px;border-radius:22px;overflow:hidden;align-self:start;margin-top:4px;background:var(--c);position:relative;border:0;padding:0;display:grid;place-items:center;text-decoration:none;color:var(--ink)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb.ico{font-size:40px;line-height:1;letter-spacing:-4px;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
+.thumb.ico .cam{position:absolute;right:6px;bottom:6px;font-size:12px;letter-spacing:0;background:#fff;border-radius:999px;padding:2px 5px;box-shadow:0 1px 0 var(--line)}
+@media (max-width:420px){.thumb.ico{font-size:32px}}
+.thumb.empty{background:var(--bg);border:2.5px dashed var(--line);font-size:12px;font-weight:700;line-height:1.3;text-align:center;color:var(--muted)}
+.thumb.empty span{display:block;font-size:24px}
+.thumb.busy::after{content:'上傳中…';position:absolute;inset:0;background:rgba(255,255,255,.8);display:grid;place-items:center;font-size:12px;font-weight:700}
+@media (max-width:420px){.it{grid-template-columns:40px minmax(0,1fr) 80px}.thumb{width:80px;height:80px;border-radius:18px}.emo{width:40px;height:40px}}
+.emo{width:44px;height:44px;border-radius:16px;background:var(--c);display:grid;place-items:center;font-size:22px;position:relative;z-index:1}
+.it .tt{font:900 14.5px var(--f-num);font-variant-numeric:tabular-nums}
+.it .tt span{font:700 12px var(--f-body);background:var(--bg);border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:1px}
+.it .nm{font-family:var(--f-cute);font-size:17px;line-height:1.35;margin-top:1px}
+.facts{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:#7a665c;margin-top:4px}
+.it .note{font-size:13px;margin-top:4px}
+.warn{list-style:none;margin:6px 0 0;padding:7px 10px;background:var(--warn-soft);border-radius:12px;font-size:12.5px}
+.warn li{padding-left:18px;position:relative}
+.warn li::before{content:"!";position:absolute;left:0;top:2px;width:13px;height:13px;border-radius:50%;background:var(--warn);color:#fff;font:900 9px/13px var(--f-num);text-align:center}
+.links{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.lk{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--blue-soft);color:var(--blue);text-decoration:none}
+.lk.ph{background:var(--lilac-soft);color:#7a5bd1}
+.lk.yp{background:#FFE3E3;color:#C8302F}
+.lk.buy{background:var(--orange-soft);color:var(--warn)}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:0 7px;border-radius:999px;margin-left:4px;vertical-align:2px;line-height:18px}
+.chip.unv{background:#F4EADC;color:#9A6A2E}.chip.book{background:var(--pink-soft);color:#D2496A}.chip.new{background:var(--mint-soft);color:#2F8A57}
+.tools{display:none;gap:6px;margin-top:6px}
+body.editing .tools{display:flex}
+.tools button{border:0;border-radius:10px;padding:4px 10px;font-size:12.5px;background:var(--bg);color:var(--ink)}
+.tools .del.armed{background:var(--warn);color:#fff}
+.handle{display:inline-grid;width:auto;padding:4px 10px;border-radius:10px;background:var(--ink);color:#fff;place-items:center;font-size:12.5px;touch-action:none;cursor:grab}
+.sortable-ghost{opacity:.4}
+.notes{margin:12px 0 0;padding:10px 14px;background:var(--yellow-soft);border-radius:16px;font-size:13.5px}
+.notes ul{margin:4px 0 0;padding-left:18px}
+.sec{padding-top:6px}
+.sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 12px}
+.sec-h h2{font-size:22px}
+.card{background:var(--card);border-radius:20px;box-shadow:0 3px 0 var(--line);padding:14px 16px;margin-bottom:12px}
+.card h3{font-size:17px;margin-bottom:6px}
+.card ul{margin:0;padding-left:20px}.card li{margin-bottom:3px}
+.empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
+.empty b{display:block;font-size:34px;margin-bottom:6px}
+.sources{font-size:12.5px;padding-left:20px;color:var(--muted)}
+.sources a{word-break:break-all}
+.pass{background:var(--card);border-radius:20px;box-shadow:0 3px 0 var(--line);margin-bottom:12px;overflow:hidden}
+.pass-top{background:var(--blue-soft);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+.pass-top b{font:900 16px var(--f-num)}
+.route{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:12px 16px 6px}
+.route .ap{font-family:var(--f-cute);font-size:18px}
+.route .tm{font:800 12.5px var(--f-num);color:var(--muted)}
+.route .pl{font-size:22px}
+.route>div:last-child{text-align:right}
+.pass-meta{display:flex;flex-wrap:wrap;gap:4px 16px;padding:8px 16px 12px;font-size:13px;color:#7a665c;border-top:2px dashed var(--line)}
+.pass .tools{padding:0 16px 12px}
+.grp{margin-bottom:12px}
+.grp h3{font-size:15px;margin:0 0 6px;color:#7a665c}
+.row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:start;background:var(--card);border-radius:16px;box-shadow:0 2px 0 var(--line);padding:10px 12px;margin-bottom:6px}
+.row input[type=checkbox]{width:20px;height:20px;accent-color:var(--pink);margin:2px 0 0}
+.row.done .rt{text-decoration:line-through;color:var(--muted)}
+.row .rn{font-size:12.5px;color:var(--muted)}
+.x{border:0;background:transparent;color:var(--muted);font-size:16px;padding:0 4px}
+.x.armed{color:#fff;background:var(--warn);border-radius:8px;font-size:12px;padding:2px 8px}
+.conv{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:end}
+.conv label{font-size:12px;color:var(--muted)}
+.conv input,.form input,.form select,.form textarea{width:100%;border:2px solid var(--line);border-radius:12px;padding:8px 10px;font:500 15px var(--f-body);background:#fff;color:var(--ink)}
+.totals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.tot{background:var(--card);border-radius:18px;box-shadow:0 3px 0 var(--line);padding:12px 14px}
+.tot b{display:block;font:900 22px var(--f-num);font-variant-numeric:tabular-nums}
+.tot span{font-size:12px;color:var(--muted)}
+.bars{display:grid;gap:6px;margin-top:6px}
+.bar{display:grid;grid-template-columns:60px minmax(0,1fr) 84px;gap:8px;align-items:center;font-size:12.5px}
+.bar .tr{height:10px;border-radius:999px;background:var(--bg);overflow:hidden}
+.bar .fl{height:100%;border-radius:999px;background:var(--pink)}
+.bar .v{text-align:right;font:800 12.5px var(--f-num);font-variant-numeric:tabular-nums}
+.exp{display:grid;grid-template-columns:36px minmax(0,1fr) auto auto;gap:8px;align-items:center;background:var(--card);border-radius:16px;box-shadow:0 2px 0 var(--line);padding:9px 12px;margin-bottom:6px}
+.exp .ce{width:36px;height:36px;border-radius:12px;background:var(--bg);display:grid;place-items:center;font-size:18px}
+.exp .am{text-align:right;font:900 14px var(--f-num);font-variant-numeric:tabular-nums}
+.exp .am small{display:block;font:700 11.5px var(--f-num);color:var(--muted)}
+.exp .ds{font-size:12px;color:var(--muted)}
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(74,58,51,.35);display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none!important}
+.sheet-in{background:var(--card);width:100%;max-width:560px;border-radius:24px 24px 0 0;max-height:88vh;overflow:auto;
+  padding:18px max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet-in h3{font-size:19px;margin-bottom:10px}
+.form{display:grid;gap:10px}
+.form label{display:grid;gap:3px;font-size:12.5px;color:var(--muted)}
+.form textarea{min-height:64px;resize:vertical}
+.form .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.btn{border:0;border-radius:999px;padding:9px 18px;font-weight:700;font-size:14px;background:var(--bg);color:var(--ink)}
+.btn.pri{background:var(--pink);color:#fff}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:#fff;border-radius:999px;padding:8px 16px;font-size:13.5px}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);box-shadow:0 -2px 0 var(--line);display:flex;
+  padding-left:max(6px,env(safe-area-inset-left,0px));padding-right:max(6px,env(safe-area-inset-right,0px));padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav button{flex:1;min-width:0;border:0;background:transparent;color:var(--muted);font-size:11px;padding:7px 0 8px;display:flex;flex-direction:column;align-items:center;gap:1px}
+.nav button span{font-size:21px;line-height:1.1;filter:grayscale(.6);opacity:.75}
+.nav button[aria-current="true"]{color:var(--ink);font-weight:700}
+.nav button[aria-current="true"] span{filter:none;opacity:1;transform:scale(1.12)}
+body.book .nav,body.book .chips,body.book .edit-bar,body.book .tools,body.book .handle,body.book .addbtn{display:none!important}
+body.book .view{margin-top:14px}
+@media (prefers-reduced-motion:no-preference){.day,.card,.pass{animation:pop .25s ease}@keyframes pop{from{transform:translateY(4px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+<script>
+const SEED={"days/d1": {"date": "02/05", "items": [{"cost": "", "en": "Schiphol Airport", "icon": "✈️", "id": "i1", "kind": "抵達", "move": "", "nm": "史基浦機場", "note": "華航 CI073 冬季班表預估時間", "q": "Amsterdam Airport Schiphol", "stay": "入境＋領行李 1–1.5 小時", "t": "07:50", "tags": ["unv"], "url": "", "warn": ["EES 生物辨識入境：第一次要按指紋、拍照", "機場大廳有人主動攬客載送請勿搭乘"]}, {"cost": "", "en": "Schiphol → Amsterdam Sloterdijk", "id": "i2", "kind": "交通", "move": "火車 10–11 分・約 €4.60／人", "nm": "NS 火車到 Sloterdijk 站", "note": "月台在 Schiphol Plaza 正下方，用感應信用卡 OVpay 進出站", "q": "Amsterdam Sloterdijk station", "stay": "", "t": "09:20", "tags": [], "url": "", "warn": ["上車前、下車後都要刷卡，沒刷可能被當成逃票罰款", "進站和出站要用同一張卡或同一支手機"]}, {"cost": "", "en": "Tempelhofstraat 2", "id": "i3", "kind": "寄行李", "move": "步行 5 分", "nm": "Hotel2Stay 寄放行李", "note": "24 小時櫃台，可免費寄放行李（住客評價）", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "15 分", "t": "09:45", "tags": [], "url": "", "warn": []}, {"cost": "約 €15–20／人（估）", "en": "Omelegg City Centre", "icon": "🍳", "id": "i4", "kind": "早午餐", "move": "火車到中央車站 5–6 分・約 €3／人", "nm": "Omelegg 蛋料理早午餐", "note": "中央車站附近的人氣早午餐店", "q": "Omelegg City Centre Amsterdam", "stay": "1 小時", "t": "10:15–11:15", "tags": ["unv"], "url": "", "warn": []}, {"cost": "", "en": "IJ-Zijde → Buiksloterweg", "id": "i5", "kind": "交通", "move": "渡輪約 5 分・免費", "nm": "免費渡輪過河", "note": "中央車站後方（IJ 河那一側）搭", "q": "Pontveer Centraal Station Buiksloterweg", "stay": "", "t": "11:15", "tags": [], "url": "", "warn": ["渡輪上腳踏車很多，跟著人群上下船", "河上風大，帽子戴好"]}, {"cost": "約 €15 起／人", "en": "A'DAM Lookout", "icon": "🗼", "id": "i6", "kind": "參觀", "move": "下船步行 2 分", "nm": "A'DAM 觀景台：360 度看阿姆斯特丹", "note": "每天 10:00–22:00；懸空鞦韆 Over the Edge 不想盪可以只看景；隔壁 EYE 電影博物館建築很好拍", "q": "A'DAM Lookout Amsterdam", "stay": "1–1.5 小時", "t": "11:30–13:00", "tags": ["new", "book", "unv"], "url": "", "warn": ["線上先買票免排隊", "頂樓戶外觀景台冬天非常冷，室內也看得到"]}, {"cost": "", "en": "Hotel2Stay", "id": "i7", "kind": "休息", "move": "渡輪＋火車約 25 分・約 €3／人", "nm": "回飯店入住、午睡", "note": "睡不超過 2 小時，晚上才睡得著", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "13:15–16:30", "tags": [], "url": "", "warn": []}, {"cost": "約 €15–25／人", "en": "Foodhallen · Oud-West", "icon": "🍔", "id": "i8", "kind": "晚餐", "move": "電車，路線以 GVB App 為準・約 €3.40／人", "nm": "Foodhallen 室內美食廣場", "note": "舊電車廠改建，二十多攤：炸肉丸 bitterballen、海鮮、漢堡、港點⋯每天中午開到深夜", "q": "Foodhallen Amsterdam", "stay": "1–1.5 小時", "t": "17:30–19:00", "tags": ["new"], "url": "", "warn": ["平日傍晚比較好找位子", "不能自帶外食"]}, {"cost": "", "en": "Good night", "id": "i9", "kind": "早睡", "move": "", "nm": "回飯店休息", "note": "", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "20:00", "tags": [], "url": "", "warn": []}], "meals": {"b": {"nm": "機上早餐＋Omelegg 早午餐", "note": "", "pp": "€15–20", "q": "Omelegg City Centre Amsterdam", "type": "早午餐・蛋料理"}, "d": {"nm": "Foodhallen", "note": "", "pp": "€15–25", "q": "Foodhallen Amsterdam", "type": "室內美食廣場・多國料理"}, "l": {"nm": "（早午餐已吃飽，可在觀景台 MADAM 喝咖啡）", "note": "", "pp": "€5", "q": "MADAM Amsterdam", "type": "咖啡"}}, "n": 1, "notes": ["入境隨身帶：回程機票、訂房紀錄、旅遊保險", "累的話觀景台可以改到 16:00 後去看夕陽（日落約 17:30）"], "summary": "長途夜班機後第一天。中午搭免費渡輪上 A'DAM 觀景台看全景，下午回飯店午睡，晚餐到室內美食廣場想吃什麼點什麼。", "title": "抵達・A'DAM 觀景台＋美食廣場", "wd": "五", "where": "史基浦 → Sloterdijk → 市區"}, "days/d2": {"date": "02/06", "items": [{"cost": "", "en": "Breakfast", "id": "i10", "kind": "早餐", "move": "", "nm": "飯店早餐", "note": "若不含早餐，Sloterdijk 車站有超市和咖啡店", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "08:00–08:30", "tags": [], "url": "", "warn": []}, {"cost": "", "en": "Sloterdijk → Centraal → Noordermarkt", "id": "i11", "kind": "交通", "move": "火車 5–6 分＋步行 15 分・約 €3／人", "nm": "火車到中央車站，步行到約旦區", "note": "", "q": "Noordermarkt Amsterdam", "stay": "", "t": "08:40", "tags": [], "url": "", "warn": []}, {"cost": "蘋果派一片約 €5–6（未確認）", "en": "Winkel 43 / Noordermarkt", "icon": "🥧", "id": "i12", "kind": "必去", "move": "", "nm": "Winkel 43 蘋果派＋週六 Noordermarkt 市集", "note": "點蘋果派加鮮奶油（met slagroom）；不接受訂位", "q": "Winkel 43 Noordermarkt 43 Amsterdam", "stay": "1–1.5 小時", "t": "09:15–10:30", "tags": [], "url": "", "warn": ["週六市集日人多，9 點多到比較不用排", "市集人擠，包包背前面"]}, {"cost": "", "en": "Museumplein", "id": "i13", "kind": "交通", "move": "電車約 20 分・每人每日上限 €10.50", "nm": "電車到博物館廣場", "note": "", "q": "Rijksmuseum Amsterdam", "stay": "", "t": "10:45–11:15", "tags": [], "url": "", "warn": []}, {"cost": "€25／人", "en": "Rijksmuseum", "icon": "🖼️", "id": "i14", "kind": "參觀", "move": "", "nm": "國家博物館：林布蘭《夜巡》、維梅爾", "note": "", "q": "Rijksmuseum Amsterdam", "stay": "2–2.5 小時", "t": "11:15–13:45", "tags": ["book"], "url": "https://www.rijksmuseum.nl", "warn": ["一定要預約入場時段", "全館不收現金，只能刷卡", "比 A4 大的包包要寄物", "下載免費官方 App，有中文導覽"]}, {"cost": "約 €10–15／人", "en": "Albert Cuypmarkt", "icon": "🧇", "id": "i15", "kind": "午餐", "move": "步行 15 分", "nm": "Albert Cuyp 市集小吃", "note": "現烤焦糖煎餅 stroopwafel、生鯡魚 haring、炸肉丸、起司", "q": "Albert Cuypmarkt Amsterdam", "stay": "1 小時", "t": "14:00–15:00", "tags": [], "url": "", "warn": ["週日休市（今天週六有開）", "部分攤位只收卡，少數只收現金，兩種都帶"]}, {"cost": "NT$912 起／人（Klook）", "en": "Heineken Experience", "icon": "🍺", "id": "i16", "kind": "體驗", "move": "步行 5 分", "nm": "海尼根體驗館（含 2 杯啤酒）", "note": "週六 10:30–21:00；自助導覽，最後到頂樓酒吧喝 2 杯；24 小時前可免費取消", "q": "Heineken Experience Amsterdam", "stay": "1.5 小時", "t": "15:15–16:45", "tags": ["book", "new"], "url": "https://www.klook.com/zh-TW/activity/4255-heineken-experience-fast-track-ticket-amsterdam/", "warn": ["未滿 18 歲不能入場，可能看證件，帶護照", "有免費寄物處，厚外套可以先寄", "週六人多，可能要排隊"]}, {"cost": "", "en": "Hotel2Stay", "id": "i17", "kind": "休息", "move": "電車 19 號直達 Sloterdijk", "nm": "回飯店休息", "note": "", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "17:00–18:30", "tags": [], "url": "", "warn": []}, {"cost": "約 €35–50／人", "en": "Sampurna · Singel 498", "icon": "🍛", "id": "i18", "kind": "晚餐", "move": "", "nm": "Sampurna 印尼飯桌", "note": "一次吃十幾道印尼小菜，荷蘭特色；吃完搭電車回飯店", "q": "Sampurna Singel 498 Amsterdam", "stay": "2 小時", "t": "19:00–21:00", "tags": ["book"], "url": "", "warn": ["週六晚熱門，1–3 週前訂位", "訂位時要選飯桌份量"]}], "meals": {"b": {"nm": "飯店早餐＋Winkel 43 蘋果派", "note": "", "pp": "€5–20", "q": "Winkel 43 Amsterdam", "type": "早餐＋點心"}, "d": {"nm": "Sampurna", "note": "備選：Kantjil & de Tijger（Spuistraat 291，€30–45）", "pp": "€35–50", "q": "Sampurna Singel 498 Amsterdam", "type": "印尼飯桌 Rijsttafel"}, "l": {"nm": "Albert Cuyp 市集", "note": "", "pp": "€10–15", "q": "Albert Cuypmarkt Amsterdam", "type": "街頭小吃"}}, "n": 2, "notes": ["今天走路較多，穿防水好走的鞋"], "summary": "早上吃 Winkel 43 蘋果派、逛週六市集；中午國家博物館；下午到德派普區，市集當午餐，再進海尼根體驗館。", "title": "蘋果派、博物館、市集與海尼根", "wd": "六", "where": "約旦區 → 博物館區 → 德派普"}, "days/d3": {"date": "02/07", "items": [{"cost": "", "en": "Breakfast", "id": "i19", "kind": "早餐", "move": "", "nm": "飯店早餐，吃飽一點", "note": "下午 1 點才吃午餐", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "07:15–07:40", "tags": [], "url": "", "warn": []}, {"cost": "", "en": "Sloterdijk → Centraal → De Ruijterkade 38B", "id": "i20", "kind": "交通", "move": "火車 5–6 分＋步行 10 分・約 €3／人", "nm": "火車到中央車站，走到集合點", "note": "", "q": "De Ruijterkade 38B Amsterdam", "stay": "", "t": "07:45", "tags": [], "url": "", "warn": ["集合 08:30–09:00，提早 15 分鐘到"]}, {"cost": "", "en": "Zaanse Schans", "icon": "🌬️🧀", "id": "i21", "kind": "參觀", "move": "巴士 30 分（團費含）", "nm": "風車村：木鞋、起司農場、風車拍照", "note": "村莊免費進入；導遊會幫忙拍合照", "q": "Zaanse Schans", "stay": "1.5 小時", "t": "09:30–11:00", "tags": ["new"], "url": "", "warn": ["村裡有居民住，私人房子和院子不要進去", "進風車內部要另外買票；冬天部分風車關閉", "河邊風很大，帽子手套戴好"]}, {"cost": "", "en": "Zaandam", "icon": "🏘️", "id": "i22", "kind": "拍照", "move": "", "nm": "贊丹樂高小鎮（彩色木屋）", "note": "", "q": "Inntel Hotels Amsterdam Zaandam", "stay": "30 分", "t": "11:15–11:45", "tags": ["new"], "url": "", "warn": []}, {"cost": "", "en": "羊角村中式餐廳", "icon": "🍜", "id": "i23", "kind": "午餐", "move": "巴士約 1.5 小時", "nm": "團費含：牛肉麵或雞肉炒飯", "note": "", "q": "Giethoorn", "stay": "1 小時", "t": "13:00–14:00", "tags": ["new"], "url": "", "warn": []}, {"cost": "", "en": "Giethoorn", "icon": "🛶", "id": "i24", "kind": "體驗", "move": "", "nm": "羊角村運河遊船＋村莊散步", "note": "", "q": "Giethoorn", "stay": "2.5 小時", "t": "14:00–16:30", "tags": ["new"], "url": "", "warn": ["房子、花園、小木橋很多是私人的，不要走進去", "村子很安靜，說話小聲", "很冷，帶暖暖包；寒流大風時導遊會徵詢後提前返程"]}, {"cost": "", "en": "Amsterdam Centraal", "id": "i25", "kind": "交通", "move": "巴士約 1.5 小時（團費含）", "nm": "回到中央車站", "note": "塞車可能晚到", "q": "Amsterdam Centraal", "stay": "", "t": "18:30–19:00", "tags": [], "url": "", "warn": []}, {"cost": "約 €15–20／人", "en": "Dinner", "id": "i26", "kind": "晚餐", "move": "", "nm": "中央車站周邊簡單吃", "note": "吃完搭火車 5–6 分回飯店", "q": "Amsterdam Centraal", "stay": "", "t": "19:15–20:30", "tags": [], "url": "", "warn": []}], "meals": {"b": {"nm": "飯店早餐", "note": "", "pp": "€0–18", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "type": "早餐"}, "d": {"nm": "中央車站周邊", "note": "", "pp": "€15–20", "q": "Amsterdam Centraal", "type": "輕食・速食"}, "l": {"nm": "團費含（羊角村中式餐廳）", "note": "", "pp": "含在團費", "q": "Giethoorn", "type": "牛肉麵／雞肉炒飯"}}, "n": 3, "notes": ["每人約 NT$3,164–3,258（含折扣），2 月日期和價格還沒開放", "活動前 24 小時可免費取消；訂完會被加入微信群組", "「中文團」是普通話導遊"], "summary": "跟 Klook 普通話導遊團走一整天，交通、午餐、羊角村遊船都包了。", "title": "Klook 中文團：風車村＋樂高小鎮＋羊角村", "wd": "日", "where": "Zaanse Schans → Zaandam → Giethoorn"}, "days/d4": {"date": "02/08", "items": [{"cost": "", "en": "Breakfast", "id": "i27", "kind": "早餐", "move": "", "nm": "飯店早餐", "note": "", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "08:00–08:30", "tags": [], "url": "", "warn": []}, {"cost": "", "en": "Sloterdijk → Delft", "id": "i28", "kind": "交通", "move": "火車約 1 小時，可能要轉一次・約 €15／人（估）", "nm": "火車到台夫特", "note": "", "q": "Delft station", "stay": "", "t": "08:45–10:00", "tags": ["unv"], "url": "", "warn": ["以 NS App 查班次", "避開通勤尖峰，包包顧好"]}, {"cost": "約 €19／人（未確認）", "en": "Royal Delft", "icon": "💙🍽️", "id": "i29", "kind": "參觀", "move": "步行 15 分或公車", "nm": "皇家台夫特藍陶工坊", "note": "09:30–17:00，最後入場 16:00；有中文語音導覽", "q": "Royal Delft Rotterdamseweg 196 Delft", "stay": "1.5 小時", "t": "10:15–11:45", "tags": ["unv"], "url": "https://www.royaldelft.com", "warn": ["易碎品請店家包好，放手提行李", "想買正品藍陶，在官方店買"]}, {"cost": "", "en": "Markt / Nieuwe Kerk", "icon": "⛪", "id": "i30", "kind": "散步", "move": "步行 15 分", "nm": "市集廣場、新教堂、運河＋午餐", "note": "教堂內部冬季開放時間要再查", "q": "Markt Delft", "stay": "1.5–2 小時", "t": "12:00–13:45", "tags": ["unv"], "url": "", "warn": []}, {"cost": "", "en": "Delft → Sloterdijk", "id": "i31", "kind": "交通", "move": "火車約 1 小時", "nm": "火車回 Sloterdijk", "note": "", "q": "Amsterdam Sloterdijk station", "stay": "", "t": "14:00–15:15", "tags": [], "url": "", "warn": []}, {"cost": "", "en": "Hotel2Stay", "id": "i32", "kind": "休息", "move": "", "nm": "回飯店休息", "note": "", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "15:15–16:30", "tags": [], "url": "", "warn": []}, {"cost": "€16.50／人", "en": "Anne Frank Huis", "icon": "📖", "id": "i33", "kind": "參觀", "move": "火車到中央車站＋步行 15 分・約 €3／人", "nm": "安妮之家（預約 17:00）", "note": "", "q": "Anne Frank House Amsterdam", "stay": "1–1.5 小時", "t": "17:00–18:15", "tags": ["book"], "url": "https://www.annefrank.org", "warn": ["只在官網買票，不能退換，最難訂", "館內禁止拍照", "樓梯又陡又窄，背小包", "這裡是紀念館，請保持安靜"]}, {"cost": "約 €30–40／人（估）", "en": "Moeders · Rozengracht 251", "icon": "🥘", "id": "i34", "kind": "晚餐", "move": "步行約 10 分", "nm": "Moeders 荷蘭媽媽菜", "note": "燉薯泥 stamppot、燉牛肉 hachée；牆上掛滿客人媽媽的照片", "q": "Moeders Rozengracht 251 Amsterdam", "stay": "1.5 小時", "t": "18:30–20:00", "tags": ["book", "unv"], "url": "", "warn": ["先訂位"]}], "meals": {"b": {"nm": "飯店早餐", "note": "", "pp": "€0–18", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "type": "早餐"}, "d": {"nm": "Moeders", "note": "", "pp": "€30–40（估）", "q": "Moeders Rozengracht 251 Amsterdam", "type": "荷蘭家常菜"}, "l": {"nm": "Johannes Café（台夫特）", "note": "備選：'t Postkantoor（Hippolytusbuurt 14）", "pp": "€12–18（估）", "q": "Johannes Cafe Voldersgracht 25 Delft", "type": "自製貝果、鬆餅"}}, "n": 4, "notes": ["安妮之家開賣日要重新確認（原本 2/7 的票是 12/22 開賣）", "2/6–2/9 荷蘭南部嘉年華，不影響行程"], "summary": "上午到台夫特看藍陶工坊、逛市集廣場；下午回飯店休息，傍晚參觀安妮之家，晚餐吃荷蘭家常菜。", "title": "台夫特藍陶・傍晚安妮之家", "wd": "一", "where": "Delft → Amsterdam"}, "days/d5": {"date": "02/09", "items": [{"cost": "", "en": "Breakfast", "id": "i35", "kind": "早餐", "move": "", "nm": "飯店早餐", "note": "", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "08:00–08:30", "tags": [], "url": "", "warn": []}, {"cost": "", "en": "Sloterdijk → Museumplein", "id": "i36", "kind": "交通", "move": "電車直達・約 €3.40／人", "nm": "電車 19 號到博物館區", "note": "車程以 GVB／9292 App 為準", "q": "Van Gogh Museum", "stay": "", "t": "08:45", "tags": ["unv"], "url": "", "warn": []}, {"cost": "€25／人＋語音導覽", "en": "Van Gogh Museum", "icon": "🌻", "id": "i37", "kind": "參觀", "move": "", "nm": "梵谷博物館（中文語音導覽）", "note": "", "q": "Van Gogh Museum Amsterdam", "stay": "2–2.5 小時", "t": "09:30–12:00", "tags": ["book", "new"], "url": "https://www.klook.com/activity/83766-van-gogh-museum-ticket-and-amsterdam-canal-cruise/", "warn": ["只能線上買票、預約時段", "只在官網或授權通路（Klook 等）買，小心假票", "館內禁止飲食", "置物櫃最大約 45×25×25 公分"]}, {"cost": "約 €12–15／人（估）", "en": "Bagels & Beans · Van Baerlestraat 40", "icon": "🥯", "id": "i38", "kind": "午餐", "move": "步行 3 分", "nm": "Bagels & Beans 貝果", "note": "", "q": "Bagels & Beans Van Baerlestraat 40 Amsterdam", "stay": "1 小時", "t": "12:00–13:15", "tags": ["unv"], "url": "", "warn": []}, {"cost": "約 €15.50／人", "en": "Canal Cruise", "icon": "🛥️", "id": "i39", "kind": "體驗", "move": "", "nm": "運河遊船 1 小時（中文語音）", "note": "用 Klook 梵谷＋運河套票；上船碼頭以憑證為準", "q": "Amsterdam canal cruise", "stay": "1 小時", "t": "13:30–14:45", "tags": ["book", "new"], "url": "", "warn": ["選有頂棚的暖氣船", "窗戶起霧反光，拍照貼近玻璃"]}, {"cost": "", "en": "Bloemenmarkt / Kalverstraat", "icon": "🌷", "id": "i40", "kind": "購物", "move": "步行或電車", "nm": "花市、Kalverstraat 買伴手禮", "note": "", "q": "Bloemenmarkt Amsterdam", "stay": "1.5 小時", "t": "15:00–16:30", "tags": ["unv"], "url": "", "warn": ["花卉球根、種子帶回台灣有檢疫規定，建議不買", "豬肉及相關製品嚴禁帶回台灣，最高罰 100 萬"]}, {"cost": "", "en": "Hotel2Stay", "id": "i41", "kind": "休息", "move": "電車 19 號或火車", "nm": "回飯店打包", "note": "在 Schiphol App 追蹤夥伴航班 CI073", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "16:45–18:00", "tags": [], "url": "", "warn": []}, {"cost": "約 €12–18／人（估）", "en": "Prinsengracht 191", "icon": "🥞", "id": "i42", "kind": "晚餐", "move": "", "nm": "The Pancake Bakery 荷蘭鬆餅", "note": "17 世紀倉庫裡吃荷蘭大鬆餅；週二營業到 20:30", "q": "The Pancake Bakery Prinsengracht 191 Amsterdam", "stay": "1–1.5 小時", "t": "18:30–20:00", "tags": ["unv"], "url": "", "warn": ["6 人以下不接受訂位，直接去"]}, {"cost": "", "en": "Good night", "id": "i43", "kind": "早睡", "move": "", "nm": "隔天 06:30 起床", "note": "", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "21:00", "tags": [], "url": "", "warn": []}], "meals": {"b": {"nm": "飯店早餐", "note": "", "pp": "€0–18", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "type": "早餐"}, "d": {"nm": "The Pancake Bakery", "note": "", "pp": "€12–18（估）", "q": "The Pancake Bakery Prinsengracht 191 Amsterdam", "type": "荷蘭鬆餅"}, "l": {"nm": "Bagels & Beans", "note": "", "pp": "€12–15（估）", "q": "Bagels & Beans Van Baerlestraat 40 Amsterdam", "type": "貝果・沙拉"}}, "n": 5, "notes": ["今天不換飯店、不拖行李", "向櫃台確認隔天早餐幾點開；太晚開就前一晚先買好"], "summary": "上午梵谷博物館，租中文語音導覽慢慢看；下午搭運河遊船，再逛花市買伴手禮。傍晚打包、早睡。", "title": "梵谷博物館＋運河遊船", "wd": "二", "where": "博物館區 → 運河 → 花市"}, "days/d6": {"date": "02/10", "items": [{"cost": "", "en": "Schiphol App", "id": "i44", "kind": "起床", "move": "", "nm": "查航班有沒有提早、在哪個入境大廳", "note": "若夥伴改搭荷航共用班號 CI9387，以下時間往後約 25 分", "q": "", "stay": "", "t": "06:30", "tags": [], "url": "", "warn": []}, {"cost": "", "en": "Breakfast", "id": "i45", "kind": "早餐", "move": "", "nm": "飯店早餐", "note": "", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "stay": "", "t": "06:45–07:20", "tags": [], "url": "", "warn": []}, {"cost": "", "en": "Hotel2Stay → Sloterdijk", "id": "i46", "kind": "退房", "move": "步行 5 分", "nm": "帶行李走到 Sloterdijk 站", "note": "", "q": "Amsterdam Sloterdijk station", "stay": "", "t": "07:25", "tags": [], "url": "", "warn": []}, {"cost": "", "en": "Sloterdijk → Schiphol", "id": "i47", "kind": "交通", "move": "火車 10–11 分・約 €4.60／人", "nm": "NS 火車到史基浦", "note": "", "q": "Amsterdam Airport Schiphol", "stay": "", "t": "07:40–07:55", "tags": [], "url": "", "warn": ["週三早上通勤尖峰，行李顧好", "誤點就搭下一班，或請飯店叫計程車"]}, {"cost": "", "en": "Schiphol Plaza · Arrivals", "icon": "🛬", "id": "i48", "kind": "等候", "move": "", "nm": "到入境大廳出口等", "note": "請夥伴落地開機後在 LINE 群組回報", "q": "Schiphol Plaza", "stay": "", "t": "08:10", "tags": [], "url": "", "warn": []}, {"cost": "", "en": "Meeting Point", "icon": "🤗", "id": "i49", "kind": "會合", "move": "", "nm": "夥伴出關，會合！", "note": "找不到彼此就約 Meeting Point 指示牌（NS 服務台與 La Place 之間）", "q": "Schiphol Plaza Meeting Point", "stay": "", "t": "08:30–09:30", "tags": [], "url": "", "warn": ["EES 首次入境較慢，夥伴可能晚一點出來"]}], "meals": {"b": {"nm": "飯店早餐", "note": "", "pp": "€0–18", "q": "Hotel2Stay, Tempelhofstraat 2, Amsterdam", "type": "早餐"}, "d": {"nm": "跟夥伴一起", "note": "", "pp": "—", "q": "", "type": "—"}, "l": {"nm": "跟夥伴一起", "note": "", "pp": "—", "q": "", "type": "—"}}, "n": 6, "notes": ["會合後跟著夥伴的行程走"], "summary": "夥伴預計搭華航 CI073，07:50 抵達。住 Sloterdijk 到機場只要 10–11 分鐘火車。", "title": "史基浦機場接夥伴", "wd": "三", "where": "Sloterdijk → Schiphol"}, "trip/flights": {"list": [{"airline": "中華航空", "arr": "2027/02/05 07:50", "dep": "2027/02/04 23:15", "from": "TPE 桃園", "id": "f1", "no": "CI073", "note": "冬季班表預估時間，訂票後請改成實際時間", "pnr": "", "seat": "", "to": "AMS 史基浦", "who": "我們"}, {"airline": "中華航空", "arr": "2027/02/10 07:50", "dep": "2027/02/09 23:15", "from": "TPE 桃園", "id": "f2", "no": "CI073", "note": "預估，等夥伴給航班號碼", "pnr": "", "seat": "", "to": "AMS 史基浦", "who": "夥伴"}, {"airline": "（待填）", "arr": "", "dep": "", "from": "AMS", "id": "f3", "no": "", "note": "回程：跟夥伴的行程確認後填", "pnr": "", "seat": "", "to": "TPE", "who": "我們"}]}, "trip/money": {"list": [{"amount": 15, "cat": "門票", "cur": "EUR", "date": "出發前", "desc": "門票", "id": "e8e7yzkb", "ts": 1792998396359, "who": "一起"}], "rate": 36.69, "rateDate": "2026/09/24 臺銀現金賣出"}, "trip/pack": {"list": [{"cat": "證件與錢", "done": false, "id": "p1", "item": "護照（效期 6 個月以上）"}, {"cat": "證件與錢", "done": false, "id": "p2", "item": "回程機票／電子機票截圖"}, {"cat": "證件與錢", "done": false, "id": "p3", "item": "飯店訂房紀錄（Hotel2Stay）"}, {"cat": "證件與錢", "done": false, "id": "p4", "item": "旅遊保險文件"}, {"cat": "證件與錢", "done": false, "id": "p5", "item": "可感應的信用卡 2 張（OVpay 刷卡進出站）"}, {"cat": "證件與錢", "done": false, "id": "p6", "item": "少量歐元現金與零錢"}, {"cat": "證件與錢", "done": false, "id": "p7", "item": "國際駕照（不開車可不帶）"}, {"cat": "證件與錢", "done": false, "id": "p8", "item": "證件影本、大頭照 2 張"}, {"cat": "冬季衣物", "done": false, "id": "p9", "item": "發熱衣褲 3–4 套"}, {"cat": "冬季衣物", "done": false, "id": "p10", "item": "毛衣或刷毛衣 2 件"}, {"cat": "冬季衣物", "done": false, "id": "p11", "item": "防風防水外套（有帽兜）"}, {"cat": "冬季衣物", "done": false, "id": "p12", "item": "保暖長褲 3 件"}, {"cat": "冬季衣物", "done": false, "id": "p13", "item": "毛帽"}, {"cat": "冬季衣物", "done": false, "id": "p14", "item": "圍巾"}, {"cat": "冬季衣物", "done": false, "id": "p15", "item": "觸控手套"}, {"cat": "冬季衣物", "done": false, "id": "p16", "item": "厚襪子 5 雙"}, {"cat": "冬季衣物", "done": false, "id": "p17", "item": "防水好走的鞋"}, {"cat": "冬季衣物", "done": false, "id": "p18", "item": "室內拖鞋"}, {"cat": "冬季衣物", "done": false, "id": "p19", "item": "睡衣"}, {"cat": "保暖小物", "done": false, "id": "p20", "item": "暖暖包（貼式＋手握式）"}, {"cat": "保暖小物", "done": false, "id": "p21", "item": "護唇膏"}, {"cat": "保暖小物", "done": false, "id": "p22", "item": "乳液、護手霜（空氣乾）"}, {"cat": "保暖小物", "done": false, "id": "p23", "item": "保溫瓶"}, {"cat": "電子產品", "done": false, "id": "p24", "item": "手機與充電線"}, {"cat": "電子產品", "done": false, "id": "p25", "item": "行動電源（放手提）"}, {"cat": "電子產品", "done": false, "id": "p26", "item": "C／F 型轉接頭（雙圓孔）"}, {"cat": "電子產品", "done": false, "id": "p27", "item": "多孔充電器"}, {"cat": "電子產品", "done": false, "id": "p28", "item": "網卡或 eSIM"}, {"cat": "電子產品", "done": false, "id": "p29", "item": "耳機"}, {"cat": "盥洗與藥品", "done": false, "id": "p30", "item": "牙刷牙膏"}, {"cat": "盥洗與藥品", "done": false, "id": "p31", "item": "常備藥（感冒、腸胃、止痛）"}, {"cat": "盥洗與藥品", "done": false, "id": "p32", "item": "個人處方藥"}, {"cat": "盥洗與藥品", "done": false, "id": "p33", "item": "口罩"}, {"cat": "盥洗與藥品", "done": false, "id": "p34", "item": "面紙、濕紙巾"}, {"cat": "盥洗與藥品", "done": false, "id": "p35", "item": "保養品（液體放托運或 100ml 以下）"}, {"cat": "其他", "done": false, "id": "p36", "item": "折疊購物袋"}, {"cat": "其他", "done": false, "id": "p37", "item": "小包包（背前面防扒手）"}, {"cat": "其他", "done": false, "id": "p38", "item": "折疊傘"}, {"cat": "其他", "done": false, "id": "p39", "item": "伴手禮空間／折疊行李袋"}, {"cat": "其他", "done": false, "id": "p40", "item": "筆（填退稅單）"}]}, "trip/shop": {"list": [{"done": false, "id": "s1", "item": "蘋果派加鮮奶油（現場吃）", "note": "", "stop": "Winkel 43（Day 2）"}, {"done": false, "id": "s2", "item": "現烤焦糖煎餅 stroopwafel", "note": "現場吃熱的", "stop": "Albert Cuyp 市集（Day 2）"}, {"done": false, "id": "s3", "item": "紀念品（啤酒杯、T 恤）", "note": "官網有客製化酒瓶服務，要事先預約", "stop": "海尼根體驗館（Day 2）"}, {"done": false, "id": "s4", "item": "木鞋鑰匙圈、木鞋小擺飾", "note": "", "stop": "風車村（Day 3）"}, {"done": false, "id": "s5", "item": "荷蘭起司（Gouda）", "note": "能否帶回台灣，出發前查防檢署", "stop": "風車村（Day 3）"}, {"done": false, "id": "s6", "item": "台夫特藍陶小盤或杯子", "note": "放手提行李", "stop": "皇家台夫特（Day 4）"}, {"done": false, "id": "s7", "item": "杏花、向日葵圖案周邊", "note": "", "stop": "梵谷博物館（Day 5）"}, {"done": false, "id": "s8", "item": "木頭鬱金香、冰箱磁鐵", "note": "不買球根和種子", "stop": "花市（Day 5）"}, {"done": false, "id": "s9", "item": "罐裝焦糖煎餅、Tony's Chocolonely 巧克力、巧克力米 hagelslag", "note": "超市買比觀光區便宜", "stop": "超市 Albert Heijn"}]}};
+(function(){
+  const KEY='nl-trip-store-v1';
+  let store=null; try{store=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
+  if(!store) store=JSON.parse(JSON.stringify(SEED));
+  const subs=new Set();
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(store));return true;}catch(e){setTimeout(()=>window.toast&&toast('手機空間不足，照片可能存不下'),0);return false;}}
+  function notify(){subs.forEach(f=>f());}
+  const snap=p=>({id:p.split('/').pop(),exists:p in store,data:()=>store[p],metadata:{fromCache:false,hasPendingWrites:false}});
+  const db={
+    doc(p){return{
+      onSnapshot(cb){const f=()=>cb(snap(p));subs.add(f);setTimeout(f,0);return()=>subs.delete(f);},
+      get(){return Promise.resolve(snap(p));},
+      update(d){store[p]=Object.assign({},store[p]||{},JSON.parse(JSON.stringify(d)));save();setTimeout(notify,0);return Promise.resolve();},
+      set(d){store[p]=JSON.parse(JSON.stringify(d));save();setTimeout(notify,0);return Promise.resolve();}};},
+    collection(c){const q={orderBy(){return q;},where(){return q;},limit(){return q;},
+      onSnapshot(cb){const f=()=>{const docs=Object.keys(store).filter(k=>k.split('/')[0]===c).sort().map(snap);cb({docs,size:docs.length,empty:!docs.length,docChanges:()=>[]});};subs.add(f);setTimeout(f,0);return()=>subs.delete(f);}};return q;}
+  };
+  const assets={
+    async upload(blob){const bmp=await createImageBitmap(blob);const sc=Math.min(1,520/Math.max(bmp.width,bmp.height));
+      const cv=document.createElement('canvas');cv.width=Math.round(bmp.width*sc);cv.height=Math.round(bmp.height*sc);cv.getContext('2d').drawImage(bmp,0,0,cv.width,cv.height);
+      return {id:'',url:cv.toDataURL('image/jpeg',0.74),sizeBytes:0,contentType:'image/jpeg'};},
+    delete(){return Promise.resolve();},list(){return Promise.resolve({assets:[]});}
+  };
+  const user={can:()=>Promise.resolve(true),isOwner:()=>true,canEdit:()=>true,id:()=>Promise.resolve('me')};
+  window.claude={use:n=>Promise.resolve(n==='db'?db:n==='assets'?assets:n==='user'?user:null)};
+  window.TRIP={
+    exportJSON(){return JSON.stringify({app:'nl-trip',savedAt:new Date().toISOString(),store},null,1);},
+    importJSON(txt){const o=JSON.parse(txt);if(!o||o.app!=='nl-trip'||!o.store)throw new Error('bad');store=o.store;save();notify();},
+    reset(){store=JSON.parse(JSON.stringify(SEED));save();notify();}
+  };
+})();
+</script>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><b>荷蘭雙人行 <span class="fly" aria-label="台灣飛到荷蘭"><svg class="flag" viewBox="0 0 30 20" role="img" aria-label="台灣"><rect width="30" height="20" fill="#FE0000"/><rect width="15" height="10" fill="#000095"/><polygon points="7.50,1.60 7.99,3.16 9.20,2.06 8.84,3.66 10.44,3.30 9.34,4.51 10.90,5.00 9.34,5.49 10.44,6.70 8.84,6.34 9.20,7.94 7.99,6.84 7.50,8.40 7.01,6.84 5.80,7.94 6.16,6.34 4.56,6.70 5.66,5.49 4.10,5.00 5.66,4.51 4.56,3.30 6.16,3.66 5.80,2.06 7.01,3.16" fill="#fff"/><circle cx="7.5" cy="5" r="1.75" fill="#000095"/><circle cx="7.5" cy="5" r="1.5" fill="#fff"/></svg><i>✈️</i><svg class="flag" viewBox="0 0 30 20" role="img" aria-label="荷蘭"><rect width="30" height="20" fill="#fff"/><rect width="30" height="6.67" fill="#AE1C28"/><rect y="13.33" width="30" height="6.67" fill="#21468B"/></svg></span></b><span>2027/02/05 – 02/10・<span id="cd"></span></span></div>
+    <button class="mode" id="modeBtn" aria-pressed="false">📖 手冊</button>
+  </header>
+  <main id="app"><div class="empty"><b>🧳</b>行程載入中…</div></main>
+</div>
+
+<nav class="nav" aria-label="主選單">
+  <button data-tab="plan" aria-current="true"><span>🗺️</span>行程</button>
+  <button data-tab="flight"><span>✈️</span>機票</button>
+  <button data-tab="shop"><span>🛍️</span>必買</button>
+  <button data-tab="money"><span>💶</span>記帳</button>
+  <button data-tab="pack"><span>🧳</span>行李</button>
+  <button data-tab="tips"><span>📌</span>須知</button>
+</nav>
+
+<div class="sheet" id="sheet" hidden><div class="sheet-in" role="dialog" aria-modal="true" id="sheetIn"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const DAYC=['','var(--d1)','var(--d2)','var(--d3)','var(--d4)','var(--d5)','var(--d6)'];
+const EMO={抵達:'✈️',交通:'🚆',寄行李:'🧳',退房:'🧳',早午餐:'🥞',早餐:'🥐',午餐:'🥪',晚餐:'🍲',參觀:'🏛️',體驗:'🎟️',必去:'🥧',散步:'🚶',拍照:'📸',購物:'🛍️',休息:'😴',早睡:'🌙',起床:'⏰',等候:'⏳',會合:'🤗'};
+const KINDS=Object.keys(EMO);
+const PHOTO=['參觀','體驗','必去','拍照','散步','購物','早午餐','午餐','晚餐','抵達'];
+const CATS={餐飲:'🍽️',交通:'🚆',門票:'🎟️',購物:'🛍️',住宿:'🏨',其他:'✨'};
+const TRIP_DATES=['02/05','02/06','02/07','02/08','02/09','02/10'];
+
+let DB=null, CAN=true, ASSETS=null;
+const picker=document.createElement('input');picker.type='file';picker.accept='image/*';picker.hidden=true;document.body.appendChild(picker);let picTarget=null;
+const S={days:null,flights:[],shop:[],pack:[],money:{rate:36.69,rateDate:'',list:[]}};
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const U={tab:ls.get('nl3-tab')||'plan',day:+(ls.get('nl3-day')||1),edit:false,book:false,armed:null,conv:{eur:10,dir:'e2t'}};
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const maps=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+const yelp=q=>'https://www.yelp.com/search?find_desc='+encodeURIComponent(q)+'&find_loc=Amsterdam%2C+Noord-Holland';
+const imgs=q=>'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(q);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const fmtT=n=>'NT$'+Math.round(n).toLocaleString('en-US');
+const fmtE=n=>'€'+(+n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2200);}
+
+(function(){const d=Math.ceil((new Date('2027-02-04T23:15:00+08:00')-new Date())/864e5);
+ document.getElementById('cd').innerHTML=d>0?`出發倒數 <em>${d}</em> 天`:'旅途中 ✨';})();
+
+const Q={};
+function write(path,data){
+  if(!DB){toast('需要登入 claude.ai 才能儲存');return Promise.resolve();}
+  Q[path]=(Q[path]||Promise.resolve()).then(()=>DB.doc(path).update(data)).catch(e=>{
+    if(e&&e.code==='invalid_argument'){CAN=false;render();toast('你目前只能看、不能修改');}
+    else if(e&&e.code==='unavailable'){return new Promise(r=>setTimeout(r,800)).then(()=>DB.doc(path).update(data)).catch(()=>toast('儲存失敗，請再試一次'));}
+    else toast('儲存失敗，請再試一次');});
+  return Q[path];
+}
+const dayDoc=n=>S.days&&S.days.find(d=>d.n===n);
+
+function vPlan(){
+  if(S.days===null) return `<div class="empty"><b>🧳</b>行程載入中…</div>`;
+  if(!S.days.length) return `<div class="empty"><b>🗺️</b>還沒有行程資料</div>`;
+  const chips=`<div class="chips" role="tablist">${S.days.map(d=>`<button role="tab" data-act="day" data-n="${d.n}" aria-selected="${d.n===U.day}" style="--c:${DAYC[d.n]}"><b>Day ${d.n}</b><small>${esc(d.date)} ${esc(d.wd)}</small></button>`).join('')}</div>`;
+  const list=U.book?S.days:S.days.filter(d=>d.n===U.day);
+  return `<section class="view sec" data-view="plan">${chips}${list.map(dayCard).join('')}</section>`;
+}
+function dayCard(d){
+  const c=DAYC[d.n]; const m=d.meals||{};
+  const meal=(k,lb)=>{const x=m[k]||{};return `<div class="meal"><div class="lb">${lb}</div><b>${esc(x.nm||'—')}</b>${x.type?`<div class="ty">${esc(x.type)}</div>`:''}${x.pp?`<div class="pp">人均 ${esc(x.pp)}</div>`:''}${x.note?`<div class="mn">${esc(x.note)}</div>`:''}<div style="display:flex;gap:8px;flex-wrap:wrap">${x.q?`<a href="${maps(x.q)}" target="_blank" rel="noopener">📍地圖</a>`:''}${x.nm&&x.pp&&x.pp!=='—'&&/[A-Za-z]/.test(x.nm)&&!/飯店|團費|跟夥伴/.test(x.nm)?`<a href="${yelp(x.nm.replace(/（.*?）/g,''))}" target="_blank" rel="noopener">⭐ Yelp 評價</a>`:''}</div></div>`;};
+  return `<article class="day" style="--c:${c}">
+   <div class="day-top"><span class="badge"><i>Day ${d.n}</i>${esc(d.date)}（${esc(d.wd)}）</span><h2>${esc(d.title)}</h2><div class="where">📍 ${esc(d.where)}</div><p>${esc(d.summary)}</p></div>
+   <div class="day-body">
+    ${CAN&&!U.book?`<div class="edit-bar"><button class="pillbtn ${U.edit?'on':''}" data-act="edit">${U.edit?'✓ 完成':'✏️ 編輯行程'}</button>${U.edit?`<button class="pillbtn add addbtn" data-act="add-item" data-n="${d.n}">＋ 新增</button>`:''}</div>`:''}
+    <div class="meals">${meal('b','🥐 早餐')}${meal('l','🥪 午餐')}${meal('d','🍲 晚餐')}</div><div class="links" style="margin:-4px 0 12px"><a class="lk yp" href="https://www.yelp.com/search?cflt=breakfast_brunch&find_loc=Amsterdam%2C+Noord-Holland" target="_blank" rel="noopener">⭐ Yelp 早午餐排行</a><a class="lk yp" href="https://www.yelp.com/search?cflt=restaurants&find_loc=Amsterdam-Centrum%2C+Amsterdam%2C+Noord-Holland" target="_blank" rel="noopener">⭐ Yelp 市中心餐廳排行</a></div>
+    <ol class="tl" data-n="${d.n}">${(d.items||[]).map(i=>itemRow(d.n,i)).join('')}</ol>
+    ${d.notes&&d.notes.length?`<div class="notes"><b>📝 小提醒</b><ul>${d.notes.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+   </div></article>`;
+}
+function itemRow(n,i){
+  const tags=(i.tags||[]).map(t=>t==='unv'?'<span class="chip unv">未確認</span>':t==='book'?'<span class="chip book">要預訂</span>':t==='new'?'<span class="chip new">新增</span>':'').join('');
+  const facts=[i.stay&&`⏱ 停留 ${esc(i.stay)}`,i.move&&`🚆 ${esc(i.move)}`,i.cost&&`💶 ${esc(i.cost)}`].filter(Boolean).map(x=>`<span>${x}</span>`).join('');
+  const armed=U.armed===i.id;
+  const showPic=!!i.img||!!i.icon||PHOTO.includes(i.kind);
+  const canUp=ASSETS&&CAN&&!U.book;
+  const thumb=!showPic?'':(!i.img&&i.icon)?(canUp?`<button class="thumb ico" data-act="pic" data-n="${n}" data-id="${esc(i.id)}" aria-label="換成照片">${esc(i.icon)}<span class="cam">📷</span></button>`:`<div class="thumb ico" aria-hidden="true">${esc(i.icon)}</div>`):i.img?`<button class="thumb" data-act="pic" data-n="${n}" data-id="${esc(i.id)}" aria-label="更換照片"><img src="${esc(i.img)}" alt="${esc(i.nm)}" loading="lazy"></button>`
+    :(ASSETS&&CAN&&!U.book)?`<button class="thumb empty" data-act="pic" data-n="${n}" data-id="${esc(i.id)}"><div><span>📷</span>加照片</div></button>`
+    :`<a class="thumb empty" href="${imgs((i.en||i.nm).split(' · ')[0]+' Netherlands')}" target="_blank" rel="noopener"><div><span>📷</span>看照片</div></a>`;
+  return `<li class="it ${showPic?'':'nopic'}" data-id="${esc(i.id)}"><div class="emo">${EMO[i.kind]||'📍'}</div><div style="min-width:0">
+   <div class="tt">${esc(i.t)}<span>${esc(i.kind)}</span>${tags}</div>
+   <div class="nm">${esc(i.nm)}</div>${i.en?`<div class="en">${esc(i.en)}</div>`:''}
+   ${facts?`<div class="facts">${facts}</div>`:''}
+   ${i.note?`<div class="note">${esc(i.note)}</div>`:''}
+   ${i.warn&&i.warn.length?`<ul class="warn">${i.warn.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>`:''}
+   <div class="links">${i.q?`<a class="lk" href="${maps(i.q)}" target="_blank" rel="noopener">📍 Google 地圖</a>`:''}${PHOTO.includes(i.kind)&&i.en?`<a class="lk ph" href="${imgs((i.en||i.nm).split(' · ')[0]+' Netherlands')}" target="_blank" rel="noopener">📷 實景照片</a>`:''}${['早午餐','午餐','晚餐'].includes(i.kind)&&i.en&&!/Breakfast|Dinner|中式|Giethoorn/.test(i.en+i.nm)?`<a class="lk yp" href="${yelp(i.en.split(' · ')[0])}" target="_blank" rel="noopener">⭐ Yelp 評價</a>`:''}${i.url?`<a class="lk buy" href="${esc(i.url)}" target="_blank" rel="noopener">🎫 訂票</a>`:''}</div>
+   <div class="tools"><span class="handle" aria-label="按住拖曳排序">⠿ 拖曳</span><button data-act="edit-item" data-n="${n}" data-id="${esc(i.id)}">✏️ 修改</button><button class="del ${armed?'armed':''}" data-act="del-item" data-n="${n}" data-id="${esc(i.id)}">${armed?'確定刪除？':'🗑 刪除'}</button>${i.img?`<button data-act="rm-pic" data-n="${n}" data-id="${esc(i.id)}">🖼 移除照片</button>`:''}</div>
+  </div>${thumb}</li>`;
+}
+function vFlight(){
+  return `<section class="view sec" data-view="flight"><div class="sec-h"><h2>✈️ 機票紀錄</h2>${CAN?`<button class="pillbtn add addbtn" data-act="add-flight">＋ 新增</button>`:''}</div>
+  ${S.flights.length?S.flights.map(f=>{const armed=U.armed===f.id;return `<div class="pass">
+   <div class="pass-top"><span>${esc(f.who||'')}・${esc(f.airline||'')}</span><b>${esc(f.no||'—')}</b></div>
+   <div class="route"><div><div class="ap">${esc(f.from||'—')}</div><div class="tm">${esc(f.dep||'')}</div></div><div class="pl">✈️</div><div><div class="ap">${esc(f.to||'—')}</div><div class="tm">${esc(f.arr||'')}</div></div></div>
+   <div class="pass-meta"><span>訂位代號 <b>${esc(f.pnr||'—')}</b></span><span>座位 <b>${esc(f.seat||'—')}</b></span>${f.note?`<span>${esc(f.note)}</span>`:''}</div>
+   ${CAN&&!U.book?`<div class="tools" style="display:flex"><button data-act="edit-flight" data-id="${esc(f.id)}">✏️ 修改</button><button class="del ${armed?'armed':''}" data-act="del-flight" data-id="${esc(f.id)}">${armed?'確定刪除？':'🗑 刪除'}</button></div>`:''}
+  </div>`}).join(''):`<div class="empty"><b>🎫</b>還沒有機票，按「＋ 新增」記下航班</div>`}</section>`;
+}
+function vShop(){
+  const groups={};S.shop.forEach(s=>{(groups[s.stop||'其他']=groups[s.stop||'其他']||[]).push(s);});
+  const done=S.shop.filter(s=>s.done).length;
+  return `<section class="view sec" data-view="shop"><div class="sec-h"><h2>🛍️ 每站必買</h2>${CAN?`<button class="pillbtn add addbtn" data-act="add-shop">＋ 新增</button>`:''}</div>
+  <p style="margin:-6px 0 12px;font-size:13px;color:var(--muted)">已買 ${done} / ${S.shop.length}・帶回台灣前先看「須知」的規定</p>
+  ${Object.keys(groups).length?Object.entries(groups).map(([g,arr])=>`<div class="grp"><h3>📍 ${esc(g)}</h3>${arr.map(s=>{const armed=U.armed===s.id;return `<div class="row ${s.done?'done':''}"><input type="checkbox" id="sh-${esc(s.id)}" data-act2="shop-done" data-id="${esc(s.id)}" ${s.done?'checked':''} ${CAN?'':'disabled'}><label for="sh-${esc(s.id)}"><div class="rt">${esc(s.item)}</div>${s.note?`<div class="rn">${esc(s.note)}</div>`:''}</label>${CAN&&!U.book?`<button class="x ${armed?'armed':''}" data-act="del-shop" data-id="${esc(s.id)}" aria-label="刪除">${armed?'刪除？':'✕'}</button>`:'<span></span>'}</div>`}).join('')}</div>`).join(''):`<div class="empty"><b>🛒</b>清單是空的</div>`}</section>`;
+}
+function vPack(){
+  const groups={};S.pack.forEach(s=>{(groups[s.cat||'其他']=groups[s.cat||'其他']||[]).push(s);});
+  const done=S.pack.filter(s=>s.done).length, pct=S.pack.length?Math.round(done/S.pack.length*100):0;
+  return `<section class="view sec" data-view="pack"><div class="sec-h"><h2>🧳 行李清單</h2>${CAN?`<button class="pillbtn add addbtn" data-act="add-pack">＋ 新增</button>`:''}</div>
+  <div class="card" style="padding:12px 16px"><div style="display:flex;justify-content:space-between;font-size:13.5px"><span>打包進度</span><b style="font-family:var(--f-num)">${done} / ${S.pack.length}・${pct}%</b></div><div class="tr" style="height:12px;border-radius:999px;background:var(--bg);overflow:hidden;margin-top:6px"><div style="height:100%;width:${pct}%;background:var(--mint);border-radius:999px"></div></div></div>
+  ${Object.keys(groups).length?Object.entries(groups).map(([g,arr])=>`<div class="grp"><h3>${esc(g)}・${arr.filter(x=>x.done).length}/${arr.length}</h3>${arr.map(s=>{const armed=U.armed===s.id;return `<div class="row ${s.done?'done':''}"><input type="checkbox" id="pk-${esc(s.id)}" data-act2="pack-done" data-id="${esc(s.id)}" ${s.done?'checked':''} ${CAN?'':'disabled'}><label for="pk-${esc(s.id)}"><div class="rt">${esc(s.item)}</div></label>${CAN&&!U.book?`<button class="x ${armed?'armed':''}" data-act="del-pack" data-id="${esc(s.id)}" aria-label="刪除">${armed?'刪除？':'✕'}</button>`:'<span></span>'}</div>`}).join('')}</div>`).join(''):`<div class="empty"><b>🧳</b>清單是空的</div>`}</section>`;
+}
+function vMoney(){
+  const r=+S.money.rate||36.69;
+  const toE=x=>x.cur==='TWD'?x.amount/r:+x.amount;
+  const list=[...(S.money.list||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.ts||0)-(a.ts||0));
+  const totE=list.reduce((s,x)=>s+toE(x),0);
+  const byCat={};list.forEach(x=>byCat[x.cat]=(byCat[x.cat]||0)+toE(x));
+  const max=Math.max(1,...Object.values(byCat));
+  const c=U.conv; const res=c.dir==='e2t'?fmtT(c.eur*r):fmtE(c.eur/r);
+  return `<section class="view sec" data-view="money"><div class="sec-h"><h2>💶 記帳</h2>${CAN?`<button class="pillbtn add addbtn" data-act="add-exp">＋ 記一筆</button>`:''}</div>
+  <div class="card"><h3>💱 換匯小幫手</h3>
+   <div class="conv"><label>${c.dir==='e2t'?'歐元 EUR':'台幣 TWD'}<input id="cv-in" type="number" inputmode="decimal" value="${esc(c.eur)}"></label>
+   <button class="btn" data-act="swap" aria-label="對調幣別" style="padding:8px 12px">⇄</button>
+   <label>${c.dir==='e2t'?'台幣 TWD':'歐元 EUR'}<input id="cv-out" value="${res}" readonly></label></div>
+   <div style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;flex-wrap:wrap"><label for="rate">匯率 1 EUR =</label><input id="rate" type="number" step="0.01" inputmode="decimal" value="${esc(r)}" style="width:96px;border:2px solid var(--line);border-radius:10px;padding:4px 8px" ${CAN?'':'disabled'}><span>TWD</span><span style="color:var(--muted);font-size:12px">${esc(S.money.rateDate||'')}・可改成刷卡當天匯率</span></div>
+  </div>
+  <div class="totals"><div class="tot"><b>${fmtE(totE)}</b><span>總花費（歐元）</span></div><div class="tot"><b>${fmtT(totE*r)}</b><span>約新台幣・每人 ${fmtT(totE*r/2)}</span></div></div>
+  ${list.length?`<div class="card"><h3>📊 分類</h3><div class="bars">${Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="bar"><span>${CATS[k]||'✨'} ${esc(k)}</span><div class="tr"><div class="fl" style="width:${(v/max*100).toFixed(1)}%"></div></div><span class="v">${fmtE(v)}</span></div>`).join('')}</div></div>
+  ${list.map(x=>{const armed=U.armed===x.id;const e=toE(x);return `<div class="exp"><div class="ce">${CATS[x.cat]||'✨'}</div><div style="min-width:0"><div>${esc(x.desc)}</div><div class="ds">${esc(x.date)}・${esc(x.cat)}・${esc(x.who||'')}</div></div><div class="am">${x.cur==='TWD'?fmtT(x.amount):fmtE(x.amount)}<small>${x.cur==='TWD'?'≈ '+fmtE(e):'≈ '+fmtT(e*r)}</small></div>${CAN&&!U.book?`<button class="x ${armed?'armed':''}" data-act="del-exp" data-id="${esc(x.id)}" aria-label="刪除">${armed?'刪除？':'✕'}</button>`:'<span></span>'}</div>`}).join('')}`
+  :`<div class="empty"><b>🧾</b>還沒有花費紀錄，按「＋ 記一筆」開始</div>`}</section>`;
+}
+const TIPS=[
+ ['🛂 入境','<ul><li>台灣護照免簽入境申根，180 天內最多停留 90 天</li><li><b>EES 生物辨識入境</b>已實施，第一次要按指紋、拍照</li><li><b>ETIAS</b> 還沒上線（2026/09 查證），12 月、1 月各查一次</li><li>隨身帶回程機票、訂房紀錄、旅遊保險</li></ul>'],
+ ['🧣 2 月氣候與穿著','<ul><li>又冷又濕、風很大，河邊和羊角村體感更冷</li><li>日落約 17:30，戶外行程排在白天</li><li>發熱衣＋毛衣＋防風防水外套；毛帽、圍巾、手套</li><li>防水好走的鞋；風大時傘不好用，帽兜外套更實用</li><li>帶暖暖包、護唇膏、乳液（空氣乾）</li></ul>'],
+ ['🙅 當地禁忌','<ul><li>不要站在<b>紅色腳踏車道</b>上拍照或聊天，腳踏車騎很快</li><li>紅燈區：2023 年起<b>街上禁止吸大麻</b>，<b>不能拍櫥窗裡的人</b></li><li>大麻、笑氣不要碰；國外使用回台灣仍可能觸法</li><li>安妮之家、教堂等場所保持安靜</li><li>風車村、羊角村的私人住家不要擅自進入院子</li></ul>'],
+ ['🤝 文化禮儀','<ul><li>荷蘭人說話直接，不是沒禮貌</li><li>進店說「Hallo」，離開說「Dank je wel」（謝謝）</li><li>小費不是必須，服務好可給 5–10% 或湊整數</li><li>餐廳不會主動送帳單，要說「Can I have the bill?」</li><li>排隊守秩序，電車上讓座給長輩</li></ul>'],
+ ['🚆 交通','<ul><li><b>OVpay</b>：火車、電車直接刷感應信用卡或手機，上車、下車都要刷，進出要同一張卡</li><li>市內電車每人每日上限 €10.50</li><li>出發前一週看 NS App 有沒有罷工或施工</li></ul>'],
+ ['🛫 史基浦機場','<ul><li>火車月台在 Schiphol Plaza 正下方</li><li>行李寄放付費、按小時計，找不到就問地勤</li><li><b>退稅</b>：同一店家單筆滿 €50 可辦（Global Blue、Planet）。出境時：線上報到 → 海關蓋章 → 選退現金或退信用卡 → 托運 → 安檢。退卡不扣手續費，約 7–10 天入帳；退現金會扣手續費</li><li>退稅海關在 Departure 3（29–30 號櫃台間），荷航在 Departure 2</li><li>出境安檢可在三天前上官網預約時段</li></ul>'],
+ ['💳 付款與電壓','<ul><li>很多地方只收卡，帶少量歐元零錢（市集、廁所）</li><li>國家博物館全館不收現金</li><li>230V，插座 C／F 型（雙圓孔），帶轉接頭</li><li>公廁多半要付費（約 €0.50–1，未確認）</li></ul>'],
+ ['👜 治安','<ul><li>中央車站、水壩廣場、電車上、市集最多扒手</li><li>手機不要放外套口袋，包包背前面</li><li>陌生人搭訕換錢、問路時注意身邊東西</li></ul>'],
+ ['🇹🇼 帶回台灣','<ul><li><b>豬肉及相關製品嚴禁帶回</b>，最高罰 100 萬</li><li>起司等乳製品、花卉球根、種子：出發前查防檢署規定（未確認）</li><li>藍陶等易碎品放手提行李</li></ul>'],
+ ['📅 特殊日期','<ul><li>2/6–2/9 荷蘭南部嘉年華，不影響本次行程</li><li>期間沒有國定假日</li><li>阿姆斯特丹擬在 2027 年把觀光稅調到房價 16%</li></ul>'],
+ ['🆘 緊急','<ul><li>緊急電話 <b>112</b></li><li>駐荷蘭台北代表處：出發前查好電話存進手機</li></ul>'],
+];
+const SOURCES=[
+ ['Hotel2Stay 住客評價','https://au.trip.com/hotels/amsterdam-hotel-detail-7253070/hotel2stay/review.html'],
+ ['Sloterdijk 站交通','https://www.amsterdamtips.com/amsterdam-sloterdijk'],
+ ['Klook 羊角村中文團','https://www.klook.com/zh-TW/activity/156760-round-trip-from-amsterdam-netherlands/'],
+ ['Klook 海尼根快速通關票','https://www.klook.com/zh-TW/activity/4255-heineken-experience-fast-track-ticket-amsterdam/'],
+ ['海尼根體驗館 營業時間','https://www.heinekenexperience.com/en/service-and-contact'],
+ ["A'DAM 觀景台",'https://thebettervacation.com/amsterdam/adam-lookout-swing/'],
+ ['Foodhallen','https://thebettervacation.com/foodhallen-amsterdam'],
+ ['梵谷博物館 官方售票','https://www.vangoghmuseum.nl/en/plan-your-visit/ticket-prices'],
+ ['印尼飯桌餐廳整理','https://www.amsterdamtourism.org/amsterdam-rijsttafel-indonesian/'],
+ ['Moeders','https://www.theinfatuation.com/amsterdam/reviews/restaurant-moeders'],
+ ['The Pancake Bakery','https://pancake.nl/en/locatie'],
+ ['台夫特午餐推薦','https://www.indelft.nl/en/our-tips/food-drink-party/5x-delicious-lunch-in-delft'],
+ ['博物館周邊餐廳','https://www.tiqets.com/blog/?p=5086'],
+ ['早午餐推薦','https://shewandersabroad.com/best-breakfast-places-in-amsterdam/'],
+ ['史基浦機場攻略（kimiyo）','https://kimiyo.tw/schiphol-airport/'],
+ ['紅燈區街頭禁吸大麻','https://www.gpb.org/news/2023/02/10/amsterdam-will-ban-cannabis-outdoors-in-its-red-light-district'],
+ ['嚴禁攜帶豬肉製品入境','https://www.ctee.com.tw/news/20260616701732-430104'],
+];
+function vTips(){
+  return `<section class="view sec" data-view="tips"><div class="sec-h"><h2>📌 荷蘭須知</h2></div>
+  <div class="card" id="backup"><h3>💾 備份與同步</h3>
+  <p style="font-size:13.5px;margin:0 0 8px">資料存在這支手機裡，沒網路也能看。要給老公同一份：按「匯出備份」把檔案傳給他（LINE 傳檔案），他在自己手機按「匯入備份」。</p>
+  <div class="links"><button class="pillbtn add" data-bk="export">⬇️ 匯出備份</button><button class="pillbtn" data-bk="import">⬆️ 匯入備份</button><button class="pillbtn" data-bk="reset">↺ 恢復原始行程</button></div>
+  <p id="bkmsg" style="font-size:12.5px;color:var(--muted);margin:6px 0 0"></p></div>
+  <p style="margin:-6px 0 12px;font-size:13px;color:var(--muted)">各景點的注意事項在每日行程的橘色「!」裡。</p>
+  <div class="card"><h3>🏨 住宿：Hotel2Stay</h3><ul><li>Tempelhofstraat 2，走到 Sloterdijk 站約 5 分</li><li>火車到中央車站 5–6 分、到史基浦 10–11 分；電車 19 號直達博物館區</li><li>24 小時櫃台、可寄放行李；<b>電梯、早餐時間未確認</b>，訂房前問清楚</li><li>在商業區，晚上附近餐廳少，晚餐在市區吃完再回來</li></ul><div class="links"><a class="lk" href="${maps('Hotel2Stay Tempelhofstraat 2 Amsterdam')}" target="_blank" rel="noopener">📍 Google 地圖</a></div></div>
+  ${TIPS.map(([t,b])=>`<div class="card"><h3>${t}</h3>${b}</div>`).join('')}
+  <div class="card"><h3>🔗 參考來源</h3><ol class="sources">${SOURCES.map(([t,u])=>`<li>${esc(t)}：<a href="${u}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//,''))}</a></li>`).join('')}</ol></div></section>`;
+}
+
+let sortables=[];
+function render(){
+  const y=window.scrollY;
+  document.body.classList.toggle('editing',U.edit&&!U.book);
+  document.body.classList.toggle('book',U.book);
+  const views={plan:vPlan,flight:vFlight,shop:vShop,pack:vPack,money:vMoney,tips:vTips};
+  document.getElementById('app').innerHTML=U.book?Object.values(views).map(f=>f()).join(''):views[U.tab]();
+  document.querySelectorAll('.nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===U.tab));
+  document.getElementById('modeBtn').setAttribute('aria-pressed',U.book);
+  sortables.forEach(s=>s.destroy());sortables=[];
+  if(U.edit&&!U.book&&window.Sortable) document.querySelectorAll('.tl').forEach(el=>{
+    sortables.push(Sortable.create(el,{handle:'.handle',animation:160,ghostClass:'sortable-ghost',onEnd:()=>{
+      const n=+el.dataset.n,d=dayDoc(n);const ids=[...el.children].map(li=>li.dataset.id);
+      const items=ids.map(id=>d.items.find(i=>i.id===id)).filter(Boolean);d.items=items;write('days/d'+n,{items});toast('順序已儲存');}}));});
+  window.scrollTo(0,y);
+}
+
+const sheet=document.getElementById('sheet'),sheetIn=document.getElementById('sheetIn');
+function openForm(title,fields,vals,onSave){
+  sheetIn.innerHTML=`<h3>${title}</h3><form class="form" id="fm">${fields.map(f=>{
+    const v=esc(vals[f.k]??'');const id='f-'+f.k;
+    const input=f.type==='select'?`<select id="${id}" name="${f.k}">${f.opts.map(o=>`<option ${o===vals[f.k]?'selected':''}>${esc(o)}</option>`).join('')}</select>`
+     :f.type==='area'?`<textarea id="${id}" name="${f.k}" placeholder="${esc(f.ph||'')}">${v}</textarea>`
+     :`<input id="${id}" name="${f.k}" type="${f.type||'text'}" ${f.type==='number'?'step="0.01" inputmode="decimal"':''} value="${v}" placeholder="${esc(f.ph||'')}" ${f.req?'required':''}>`;
+    return `<label for="${id}">${f.lb}${input}</label>`;}).join('')}
+    <div class="acts"><button type="button" class="btn" data-act="close">取消</button><button type="submit" class="btn pri">儲存</button></div></form>`;
+  sheet.hidden=false;
+  document.getElementById('fm').onsubmit=e=>{e.preventDefault();const o={};new FormData(e.target).forEach((v,k)=>o[k]=String(v).trim());sheet.hidden=true;onSave(o);};
+  setTimeout(()=>{const f=sheetIn.querySelector('input,select');f&&f.focus();},50);
+}
+const ITEM_F=[{k:'t',lb:'時間',ph:'例如 14:00–15:30',req:1},{k:'kind',lb:'類型',type:'select',opts:KINDS},{k:'nm',lb:'名稱',req:1},{k:'en',lb:'英文／荷文名稱（找照片用）'},{k:'icon',lb:'代表圖示（貼 1–2 個表情符號）',ph:'例如 🌷'},{k:'q',lb:'Google 地圖搜尋字',ph:'例如 Rijksmuseum Amsterdam'},{k:'stay',lb:'建議停留',ph:'例如 1.5 小時'},{k:'move',lb:'交通方式與費用',ph:'例如 電車 15 分・€3.40／人'},{k:'cost',lb:'費用',ph:'例如 €25／人'},{k:'note',lb:'備註',type:'area'},{k:'warn',lb:'注意事項（一行一條）',type:'area'},{k:'url',lb:'訂票網址',type:'url'}];
+function itemFromForm(o,base){return Object.assign({},base,{t:o.t,kind:o.kind,nm:o.nm,en:o.en,icon:o.icon,q:o.q,stay:o.stay,move:o.move,cost:o.cost,note:o.note,url:o.url,warn:o.warn?o.warn.split('\n').map(s=>s.trim()).filter(Boolean):[]});}
+const FLIGHT_F=[{k:'who',lb:'誰的航班',ph:'我們／夥伴'},{k:'airline',lb:'航空公司'},{k:'no',lb:'航班號碼',ph:'CI073'},{k:'from',lb:'出發',ph:'TPE 桃園'},{k:'to',lb:'抵達',ph:'AMS 史基浦'},{k:'dep',lb:'起飛時間',ph:'2027/02/04 23:15'},{k:'arr',lb:'抵達時間',ph:'2027/02/05 07:50'},{k:'pnr',lb:'訂位代號'},{k:'seat',lb:'座位'},{k:'note',lb:'備註',type:'area'}];
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');
+  if(!b){if(U.armed&&!e.target.closest('.sheet')){U.armed=null;render();}return;}
+  const a=b.dataset.act, n=+b.dataset.n, id=b.dataset.id;
+  if(!a.startsWith('del-'))U.armed=null;
+  if(a==='day'){U.day=n;ls.set('nl3-day',n);render();window.scrollTo(0,0);}
+  else if(a==='edit'){U.edit=!U.edit;render();}
+  else if(a==='close'){sheet.hidden=true;}
+  else if(a==='add-item'){openForm('＋ 新增行程',ITEM_F,{kind:'參觀'},o=>{const d=dayDoc(n);d.items=[...(d.items||[]),itemFromForm(o,{id:'i'+uid(),tags:[]})];render();write('days/d'+n,{items:d.items});toast('已新增，可拖曳 ⠿ 調整順序');});}
+  else if(a==='edit-item'){const d=dayDoc(n),it=d.items.find(i=>i.id===id);openForm('✏️ 修改行程',ITEM_F,Object.assign({},it,{warn:(it.warn||[]).join('\n')}),o=>{d.items=d.items.map(i=>i.id===id?itemFromForm(o,i):i);render();write('days/d'+n,{items:d.items});toast('已儲存');});}
+  else if(a==='del-item'){if(U.armed!==id){U.armed=id;render();return;}const d=dayDoc(n);d.items=d.items.filter(i=>i.id!==id);U.armed=null;render();write('days/d'+n,{items:d.items});toast('已刪除');}
+  else if(a==='add-flight'){openForm('✈️ 新增航班',FLIGHT_F,{},o=>{S.flights=[...S.flights,Object.assign({id:'f'+uid()},o)];render();write('trip/flights',{list:S.flights});});}
+  else if(a==='edit-flight'){const f=S.flights.find(x=>x.id===id);openForm('✏️ 修改航班',FLIGHT_F,f,o=>{S.flights=S.flights.map(x=>x.id===id?Object.assign({},x,o):x);render();write('trip/flights',{list:S.flights});toast('已儲存');});}
+  else if(a==='del-flight'){if(U.armed!==id){U.armed=id;render();return;}S.flights=S.flights.filter(x=>x.id!==id);U.armed=null;render();write('trip/flights',{list:S.flights});}
+  else if(a==='add-shop'){openForm('🛍️ 新增必買',[{k:'stop',lb:'哪一站',ph:'例如 風車村（Day 3）',req:1},{k:'item',lb:'要買什麼',req:1},{k:'note',lb:'備註'}],{},o=>{S.shop=[...S.shop,Object.assign({id:'s'+uid(),done:false},o)];render();write('trip/shop',{list:S.shop});});}
+  else if(a==='add-pack'){openForm('🧳 新增行李',[{k:'cat',lb:'分類',type:'select',opts:[...new Set([...S.pack.map(x=>x.cat),'其他'])]},{k:'item',lb:'物品',req:1}],{cat:'其他'},o=>{S.pack=[...S.pack,{id:'p'+uid(),cat:o.cat,item:o.item,done:false}];render();write('trip/pack',{list:S.pack});});}
+  else if(a==='del-pack'){if(U.armed!==id){U.armed=id;render();return;}S.pack=S.pack.filter(x=>x.id!==id);U.armed=null;render();write('trip/pack',{list:S.pack});}
+  else if(a==='del-shop'){if(U.armed!==id){U.armed=id;render();return;}S.shop=S.shop.filter(x=>x.id!==id);U.armed=null;render();write('trip/shop',{list:S.shop});}
+  else if(a==='add-exp'){const today=new Date();const md=String(today.getMonth()+1).padStart(2,'0')+'/'+String(today.getDate()).padStart(2,'0');
+    openForm('💶 記一筆',[{k:'desc',lb:'項目',req:1,ph:'例如 海尼根門票'},{k:'amount',lb:'金額',type:'number',req:1},{k:'cur',lb:'幣別',type:'select',opts:['EUR','TWD']},{k:'cat',lb:'分類',type:'select',opts:Object.keys(CATS)},{k:'date',lb:'日期',type:'select',opts:[...TRIP_DATES,'出發前']},{k:'who',lb:'誰付的',type:'select',opts:['雅涵','老公','一起']}],
+      {cur:'EUR',cat:'餐飲',date:TRIP_DATES.includes(md)?md:'出發前',who:'一起'},o=>{const amt=parseFloat(o.amount);if(!(amt>0)){toast('金額要大於 0');return;}
+      S.money.list=[...(S.money.list||[]),{id:'e'+uid(),ts:Date.now(),desc:o.desc,amount:amt,cur:o.cur,cat:o.cat,date:o.date,who:o.who}];render();write('trip/money',{list:S.money.list});toast('記好了');});}
+  else if(a==='del-exp'){if(U.armed!==id){U.armed=id;render();return;}S.money.list=S.money.list.filter(x=>x.id!==id);U.armed=null;render();write('trip/money',{list:S.money.list});}
+  else if(a==='pic'){if(!ASSETS||!CAN){toast('需要編輯權限才能放照片');return;}picTarget={n,id};picker.value='';picker.click();}
+  else if(a==='rm-pic'){const d=dayDoc(n),it=d.items.find(i=>i.id===id);const old=it.imgId;d.items=d.items.map(i=>i.id===id?Object.assign({},i,{img:'',imgId:''}):i);render();write('days/d'+n,{items:d.items}).then(()=>{if(old&&ASSETS)ASSETS.delete(old).catch(()=>{});});toast('已移除照片');}
+  else if(a==='swap'){const r=+S.money.rate||36.69;U.conv.eur=U.conv.dir==='e2t'?Math.round(U.conv.eur*r):+(U.conv.eur/r).toFixed(2);U.conv.dir=U.conv.dir==='e2t'?'t2e':'e2t';render();}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.act2==='pack-done'){S.pack=S.pack.map(x=>x.id===t.dataset.id?Object.assign({},x,{done:t.checked}):x);render();write('trip/pack',{list:S.pack});}
+  if(t.dataset.act2==='shop-done'){S.shop=S.shop.map(x=>x.id===t.dataset.id?Object.assign({},x,{done:t.checked}):x);render();write('trip/shop',{list:S.shop});}
+  if(t.id==='rate'){const v=parseFloat(t.value);if(v>0){S.money.rate=v;S.money.rateDate='手動更新 '+new Date().toLocaleDateString('zh-TW');render();write('trip/money',{rate:v,rateDate:S.money.rateDate});}}
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='cv-in'){U.conv.eur=parseFloat(e.target.value)||0;const r=+S.money.rate||36.69;document.getElementById('cv-out').value=U.conv.dir==='e2t'?fmtT(U.conv.eur*r):fmtE(U.conv.eur/r);}
+});
+picker.addEventListener('change',async()=>{
+  const f=picker.files&&picker.files[0];if(!f||!picTarget)return;const {n,id}=picTarget;
+  const el=document.querySelector(`.thumb[data-id="${id}"]`);el&&el.classList.add('busy');
+  try{
+    const bmp=await createImageBitmap(f);const sc=Math.min(1,900/Math.max(bmp.width,bmp.height));
+    const cv=document.createElement('canvas');cv.width=Math.round(bmp.width*sc);cv.height=Math.round(bmp.height*sc);cv.getContext('2d').drawImage(bmp,0,0,cv.width,cv.height);
+    const blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',0.82));
+    const up=await ASSETS.upload(blob);
+    const d=dayDoc(n);const old=(d.items.find(i=>i.id===id)||{}).imgId;
+    d.items=d.items.map(i=>i.id===id?Object.assign({},i,{img:up.url,imgId:up.id}):i);render();
+    await write('days/d'+n,{items:d.items});if(old)ASSETS.delete(old).catch(()=>{});toast('照片放好了 📷');
+  }catch(e){el&&el.classList.remove('busy');toast('上傳失敗，換一張照片試試');}
+});
+sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.hidden=true;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')sheet.hidden=true;});
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{U.tab=b.dataset.tab;U.edit=false;ls.set('nl3-tab',U.tab);render();window.scrollTo(0,0);}));
+document.getElementById('modeBtn').addEventListener('click',()=>{U.book=!U.book;U.edit=false;render();window.scrollTo(0,0);});
+
+render();
+(async()=>{
+  const db=await window.claude?.use?.('db');
+  if(!db){S.days=[];document.getElementById('app').innerHTML=`<div class="empty"><b>🔒</b>請登入 claude.ai 後開啟，才看得到行程資料</div>`;return;}
+  DB=db;
+  window.claude.use('assets').then(a=>{ASSETS=a;render();}).catch(()=>{});
+  try{const user=await window.claude.use('user');const c=user?await user.can('data.write'):null;if(c===false)CAN=false;}catch(e){}
+  db.collection('days').orderBy('n').onSnapshot(snap=>{S.days=snap.docs.map(d=>JSON.parse(JSON.stringify(d.data())));
+    if(!S.days.find(d=>d.n===U.day)&&S.days.length)U.day=S.days[0].n;render();},()=>toast('行程讀取失敗，請重新整理'));
+  db.doc('trip/flights').onSnapshot(s=>{S.flights=s.exists?JSON.parse(JSON.stringify(s.data().list||[])):[];render();});
+  db.doc('trip/pack').onSnapshot(s=>{S.pack=s.exists?JSON.parse(JSON.stringify(s.data().list||[])):[];render();});
+  db.doc('trip/shop').onSnapshot(s=>{S.shop=s.exists?JSON.parse(JSON.stringify(s.data().list||[])):[];render();});
+  db.doc('trip/money').onSnapshot(s=>{if(s.exists){const d=s.data();S.money={rate:d.rate||36.69,rateDate:d.rateDate||'',list:JSON.parse(JSON.stringify(d.list||[]))};}render();});
+})();
+</script>
+<script>
+(function(){
+  const fi=document.createElement('input');fi.type='file';fi.accept='application/json,.json';fi.hidden=true;document.body.appendChild(fi);
+  let resetArmed=false;
+  const msg=t=>{const m=document.getElementById('bkmsg');if(m)m.textContent=t;};
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-bk]');if(!b)return;const k=b.dataset.bk;
+    if(k==='export'){const blob=new Blob([TRIP.exportJSON()],{type:'application/json'});const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);a.download='荷蘭行程備份-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();
+      setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);msg('已匯出，檔案在下載資料夾');}
+    else if(k==='import'){fi.value='';fi.click();}
+    else if(k==='reset'){if(!resetArmed){resetArmed=true;b.textContent='確定要恢復？你改過的會不見';return;}TRIP.reset();resetArmed=false;msg('已恢復原始行程');}
+  });
+  fi.addEventListener('change',async()=>{const f=fi.files[0];if(!f)return;try{TRIP.importJSON(await f.text());msg('匯入完成 🎉');}catch(e){msg('這個檔案不是行程備份，換一個試試');}});
+  if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+})();
+</script>
+</body>
+</html>
