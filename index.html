@@ -12,7 +12,8 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
-<style>html{padding-top:env(safe-area-inset-top,0px)}body{margin:0;-webkit-text-size-adjust:100%}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>html{padding-top:env(safe-area-inset-top,0px)}body{margin:0;-webkit-text-size-adjust:100%}img{max-width:100%}[hidden]{display:none!important}.pcard{position:relative;background:var(--card,#fff);box-shadow:0 1px 3px rgba(0,0,0,.08);border-radius:12px;padding:10px 12px;margin-top:8px}.pcard>b{display:block;font-size:15px;padding-right:36px}.pcard .pz{position:absolute;right:4px;top:4px;border:0;background:none;font-size:18px;padding:6px;cursor:pointer}.pl{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:#F2F7FD;border-radius:10px;padding:9px 10px;margin-top:6px;color:inherit;font-size:14px;cursor:pointer}.pl em{font-style:normal;font-size:12px;font-weight:700;color:#3a5a8a;flex:none}.pl span{flex:1;color:#2b4a7a;line-height:1.4}.pl i{font-style:normal;flex:none}.pl.spk{background:#E3F1FF;outline:2px solid #9CC7F2}
+</style>
 
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -448,7 +449,7 @@ function dayCard(d){
    </div></article>`;
 }
 function itemRow(n,i){
-  const tags=(i.tags||[]).map(t=>t==='unv'?'<span class="chip unv">未確認</span>':t==='book'?'<span class="chip book">要預訂</span>':t==='new'?'<span class="chip new">新增</span>':'').join('');
+  const tags=(i.tags||[]).map(t=>t==='unv'?'<span class="chip unv">未確認</span>':t==='book'?'<span class="chip book">要預訂</span>':t==='new'?'':'').join('');
   const facts=[i.stay&&`⏱ 停留 ${esc(i.stay)}`,i.move&&`${mvIcon(i.move)} ${esc(i.move)}`,i.cost&&`💶 ${esc(i.cost)}`].filter(Boolean).map(x=>`<span>${x}</span>`).join('');
   const armed=U.armed===i.id;
   const showPic=false;
@@ -463,7 +464,7 @@ function itemRow(n,i){
    ${facts?`<div class="facts">${facts}</div>`:''}
    ${i.note?`<div class="note">${esc(i.note)}</div>`:''}
    ${i.warn&&i.warn.length?`<ul class="warn">${i.warn.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>`:''}
-   <div class="links"><a class="lk nv" href="${nav(gq)}" target="_blank" rel="noopener">🧭 導航</a><a class="lk" href="${maps(gq)}" target="_blank" rel="noopener">📍 地圖</a>${PHOTO.includes(i.kind)&&i.en?`<a class="lk ph" href="${imgs((i.en||i.nm).split(' · ')[0]+' Netherlands')}" target="_blank" rel="noopener">📷 照片</a>`:''}${['早午餐','午餐','晚餐'].includes(i.kind)&&i.en&&!/Breakfast|Dinner|中式|Giethoorn/.test(i.en+i.nm)?`<a class="lk yp" href="${yelp(i.en.split(' · ')[0])}" target="_blank" rel="noopener">⭐ 評價</a>`:''}${i.url?`<a class="lk buy" href="${esc(i.url)}" target="_blank" rel="noopener">🎫 訂票</a>`:''}</div>
+   <div class="links"><a class="lk nv" href="${nav(gq)}" target="_blank" rel="noopener">🧭 導航</a>${PHOTO.includes(i.kind)&&i.en?`<a class="lk ph" href="${imgs((i.en||i.nm).split(' · ')[0]+' Netherlands')}" target="_blank" rel="noopener">📷 照片</a>`:''}${['早午餐','午餐','晚餐'].includes(i.kind)&&i.en&&!/Breakfast|Dinner|中式|Giethoorn/.test(i.en+i.nm)?`<a class="lk yp" href="${yelp(i.en.split(' · ')[0])}" target="_blank" rel="noopener">⭐ 評價</a>`:''}${i.url?`<a class="lk buy" href="${esc(i.url)}" target="_blank" rel="noopener">🎫 訂票</a>`:''}</div>
    <div class="tools"><span class="handle" aria-label="按住拖曳排序">⠿ 拖曳</span><button data-act="edit-item" data-n="${n}" data-id="${esc(i.id)}">✏️ 修改</button><button class="del ${armed?'armed':''}" data-act="del-item" data-n="${n}" data-id="${esc(i.id)}">${armed?'確定刪除？':'🗑 刪除'}</button>${i.img?`<button data-act="rm-pic" data-n="${n}" data-id="${esc(i.id)}">🖼 移除照片</button>`:''}</div>
   </div>${thumb}</li>`;
 }
@@ -648,9 +649,9 @@ const PHR=[
  ['👋 基本',[
   ['你好','Hello!','Hallo!'],['謝謝','Thank you!','Dank je wel!'],['不好意思（借過、請問）','Excuse me.','Pardon.'],['對不起','Sorry.','Sorry.'],['我不太會說英文（荷文），請說慢一點','My English is not very good. Could you speak slowly, please?','Ik spreek geen Nederlands. Kunt u langzaam praten, alstublieft?'],['可以寫下來給我看嗎？','Could you write it down, please?','Kunt u het opschrijven, alstublieft?'],['好的，沒問題','OK, no problem.','Oké, geen probleem.'],['不用了，謝謝','No, thank you.','Nee, dank u.']]],
  ['🏨 住宿',[
-  ['我們有訂房，名字是 Chung Ya Han','Hello, we have a reservation under the name Chung Ya Han.','Hallo, we hebben een reservering op naam van Chung Ya Han.'],['可以先寄放行李嗎？','Can we leave our luggage here, please?','Mogen we onze bagage hier laten, alstublieft?'],['幾點可以入住／幾點退房？','What time is check-in / check-out?','Hoe laat is het inchecken / uitchecken?'],['早餐在哪裡？幾點開始？','Where is breakfast, and what time does it start?','Waar is het ontbijt, en hoe laat begint het?'],['Wi-Fi 密碼是什麼？','What is the Wi-Fi password?','Wat is het wifi-wachtwoord?'],['房間沒有熱水／暖氣不熱','There is no hot water. / The heating is not working.','Er is geen warm water. / De verwarming werkt niet.'],['可以幫我們叫計程車嗎？','Could you call a taxi for us, please?','Kunt u een taxi voor ons bellen, alstublieft?'],['城市稅要付多少？可以刷卡嗎？','How much is the city tax? Can I pay by card?','Hoeveel is de toeristenbelasting? Kan ik met de kaart betalen?']]],
+  ['我們有訂房，名字是 Chung Ya Han','Hello, we have a reservation under the name Chung Ya Han.','Hallo, we hebben een reservering op naam van Chung Ya Han.'],['可以先寄放行李嗎？','Can we leave our luggage here, please?','Mogen we onze bagage hier laten, alstublieft?'],['幾點可以入住／幾點退房？','What time is check-in / check-out?','Hoe laat is het inchecken / uitchecken?'],['早餐在哪裡？幾點開始？','Where is breakfast, and what time does it start?','Waar is het ontbijt, en hoe laat begint het?'],['Wi-Fi 密碼是什麼？','What is the Wi-Fi password?','Wat is het wifi-wachtwoord?'],['房間沒有熱水／暖氣不熱','There is no hot water. / The heating is not working.','Er is geen warm water. / De verwarming werkt niet.'],['可以幫我們叫計程車嗎？','Could you call a taxi for us, please?','Kunt u een taxi voor ons bellen, alstublieft?'],['城市稅要付多少？可以刷卡嗎？','How much is the city tax? Can I pay by card?','Hoeveel is de toeristenbelasting? Kan ik met de kaart betalen?'],['可以多給兩條毛巾嗎？','Could we have two more towels, please?','Mogen we nog twee handdoeken, alstublieft?'],['我們想送洗衣服，多少錢？多久好？','We would like to use the laundry service. How much is it, and when will it be ready?','We willen graag de wasservice gebruiken. Hoeveel kost het en wanneer is het klaar?'],['房卡打不開門','Our key card does not work.','Onze sleutelkaart werkt niet.'],['退房後可以寄放行李到下午嗎？','Can we leave our luggage here after check-out until the afternoon?','Mogen we na het uitchecken onze bagage hier laten tot de middag?']]],
  ['🚆 交通',[
-  ['這班車有到這裡嗎？（給他看站名）','Does this train go here?','Gaat deze trein hierheen?'],['請問是幾號月台？','Which platform, please?','Welk spoor, alstublieft?'],['兩張到布魯日的票','Two tickets to Brugge, please.','Twee kaartjes naar Brugge, alstublieft.'],['我要在哪一站下車？','Where should I get off?','Waar moet ik uitstappen?'],['我的火車誤點了，可以搭下一班嗎？','My train was delayed. Can I take the next one?','Mijn trein had vertraging. Mag ik de volgende nemen?'],['請載我們到這個地址','Please take us to this address.','Breng ons naar dit adres, alstublieft.'],['到那裡大概多少錢？','About how much will it cost to get there?','Hoeveel kost het ongeveer tot daar?'],['廁所在哪裡？','Where is the toilet, please?','Waar is het toilet, alstublieft?']]],
+  ['這班車有到這裡嗎？（給他看站名）','Does this train go here?','Gaat deze trein hierheen?'],['請問是幾號月台？','Which platform, please?','Welk spoor, alstublieft?'],['兩張到布魯日的票','Two tickets to Brugge, please.','Twee kaartjes naar Brugge, alstublieft.'],['我要在哪一站下車？','Where should I get off?','Waar moet ik uitstappen?'],['我的火車誤點了，可以搭下一班嗎？','My train was delayed. Can I take the next one?','Mijn trein had vertraging. Mag ik de volgende nemen?'],['請載我們到這個地址','Please take us to this address.','Breng ons naar dit adres, alstublieft.'],['到那裡大概多少錢？','About how much will it cost to get there?','Hoeveel kost het ongeveer tot daar?'],['廁所在哪裡？','Where is the toilet, please?','Waar is het toilet, alstublieft?'],['我的票可以搭這班車嗎？（給他看 App）','Is my ticket valid on this train?','Is mijn kaartje geldig voor deze trein?'],['這班車有停布魯塞爾中央車站嗎？','Does this train stop at Brussels Central?','Stopt deze trein in Brussel-Centraal?'],['我要在哪裡轉車？','Where do I change trains?','Waar moet ik overstappen?'],['火車取消了，我要怎麼去？','My train is cancelled. How can I get there?','Mijn trein is geannuleerd. Hoe kom ik er nu?'],['計程車可以刷卡嗎？','Can I pay by card in the taxi?','Kan ik in de taxi met de kaart betalen?'],['可以給我收據嗎？','Can I have a receipt, please?','Mag ik een bonnetje, alstublieft?']]],
  ['📶 網路',[
   ['Wi-Fi 密碼是什麼？','What is the Wi-Fi password?','Wat is het wifi-wachtwoord?'],
   ['這裡有免費 Wi-Fi 嗎？','Is there free Wi-Fi here?','Is er hier gratis wifi?'],
@@ -676,20 +677,41 @@ const PHR=[
   ['我是台灣人，這是我的護照影本','I am from Taiwan. This is a copy of my passport.','Ik kom uit Taiwan. Dit is een kopie van mijn paspoort.'],
   ['我的航班是 2 月 15 日','My flight home is on 15 February.','Mijn vlucht naar huis is op 15 februari.']]],
  ['🍽️ 點餐',[
-  ['兩位，有位子嗎？','A table for two, please.','Een tafel voor twee, alstublieft.'],['有英文菜單嗎？','Do you have an English menu?','Heeft u een Engelse menukaart?'],['你推薦什麼？','What do you recommend?','Wat raadt u aan?'],['我要這個（指菜單）','I would like this one, please.','Ik wil graag deze, alstublieft.'],['不要加這個','Without this, please.','Zonder dit, alstublieft.'],['可以給我們一壺自來水嗎？','Could we have a jug of tap water, please?','Mogen we een karaf kraanwater, alstublieft?'],['可以外帶嗎？','Can I take it away?','Kan ik het meenemen?'],['買單，謝謝。可以刷卡嗎？','The bill, please. Can I pay by card?','De rekening, alstublieft. Kan ik met de kaart betalen?']]],
+  ['兩位，有位子嗎？','A table for two, please.','Een tafel voor twee, alstublieft.'],['有英文菜單嗎？','Do you have an English menu?','Heeft u een Engelse menukaart?'],['你推薦什麼？','What do you recommend?','Wat raadt u aan?'],['我要這個（指菜單）','I would like this one, please.','Ik wil graag deze, alstublieft.'],['不要加這個','Without this, please.','Zonder dit, alstublieft.'],['可以給我們一壺自來水嗎？','Could we have a jug of tap water, please?','Mogen we een karaf kraanwater, alstublieft?'],['可以外帶嗎？','Can I take it away?','Kan ik het meenemen?'],['買單，謝謝。可以刷卡嗎？','The bill, please. Can I pay by card?','De rekening, alstublieft. Kan ik met de kaart betalen?'],['我們有訂位，名字是 Chung','We have a reservation under the name Chung.','We hebben gereserveerd op naam van Chung.'],['這道菜會辣嗎？','Is this dish spicy?','Is dit gerecht pittig?'],['我們要分著吃，可以多給一個盤子嗎？','We will share. Could we have an extra plate, please?','We delen het. Mogen we een extra bord, alstublieft?'],['有包含服務費嗎？','Is service included?','Is de bediening inbegrepen?'],['很好吃，謝謝！','It was delicious, thank you!','Het was heerlijk, dank u wel!']]],
+ ['☕ 咖啡・飲料',[
+  ['一杯拿鐵、一杯卡布奇諾','One latte and one cappuccino, please.','Eén latte en één cappuccino, alstublieft.'],
+  ['一杯熱巧克力','A hot chocolate, please.','Een warme chocolademelk, alstublieft.'],
+  ['一杯小杯啤酒','A small beer, please.','Een klein biertje, alstublieft.'],
+  ['有無酒精的嗎？','Do you have anything alcohol-free?','Heeft u iets alcoholvrijs?'],
+  ['內用／外帶','For here. / To take away.','Hier opdrinken. / Meenemen.'],
+  ['可以坐這裡嗎？','Is this seat free?','Is deze plaats vrij?']]],
+ ['🎫 景點・博物館',[
+  ['我有線上預約，這是 QR code','I have an online booking. Here is the QR code.','Ik heb online gereserveerd. Hier is de QR-code.'],
+  ['有中文語音導覽嗎？','Do you have an audio guide in Chinese?','Heeft u een audiotour in het Chinees?'],
+  ['置物櫃在哪裡？','Where are the lockers?','Waar zijn de kluisjes?'],
+  ['可以拍照嗎？','Can I take photos here?','Mag ik hier foto\'s maken?'],
+  ['幾點關門？','What time do you close?','Hoe laat gaat u dicht?'],
+  ['出口在哪裡？','Where is the exit?','Waar is de uitgang?']]],
+ ['✈️ 機場',[
+  ['華航報到櫃台在哪裡？','Where is the China Airlines check-in desk?','Waar is de incheckbalie van China Airlines?'],
+  ['退稅櫃台在哪裡？','Where is the tax refund desk?','Waar is de tax-free balie?'],
+  ['Meeting Point 在哪裡？','Where is the Meeting Point?','Waar is het Meeting Point?'],
+  ['這是手提行李','This is my carry-on bag.','Dit is mijn handbagage.'],
+  ['我的行李沒有出來','My luggage did not arrive.','Mijn bagage is niet aangekomen.']]],
  ['🛍️ 購物',[
-  ['這個多少錢？','How much is this?','Hoeveel kost dit?'],['我只是看看，謝謝','I am just looking, thank you.','Ik kijk even rond, dank u.'],['有別的顏色／尺寸嗎？','Do you have it in another color / size?','Heeft u dit in een andere kleur / maat?'],['可以辦退稅嗎？','Can I get a tax-free form, please?','Mag ik een tax-free formulier, alstublieft?'],['可以給我一個袋子嗎？','Can I have a bag, please?','Mag ik een tasje, alstublieft?'],['可以包成禮物嗎？','Could you gift-wrap it, please?','Kunt u het als cadeau inpakken, alstublieft?']]],
+  ['這個多少錢？','How much is this?','Hoeveel kost dit?'],['我只是看看，謝謝','I am just looking, thank you.','Ik kijk even rond, dank u.'],['有別的顏色／尺寸嗎？','Do you have it in another color / size?','Heeft u dit in een andere kleur / maat?'],['可以辦退稅嗎？','Can I get a tax-free form, please?','Mag ik een tax-free formulier, alstublieft?'],['可以給我一個袋子嗎？','Can I have a bag, please?','Mag ik een tasje, alstublieft?'],['可以包成禮物嗎？','Could you gift-wrap it, please?','Kunt u het als cadeau inpakken, alstublieft?'],['可以刷卡嗎？','Can I pay by card?','Kan ik met de kaart betalen?'],['可以試吃嗎？','Can I taste it?','Mag ik het proeven?'],['這個可以帶上飛機嗎？','Can I take this on the plane?','Mag ik dit meenemen in het vliegtuig?'],['請幫我包好，要放行李箱','Could you wrap it well, please? It is going in my suitcase.','Kunt u het goed inpakken, alstublieft? Het gaat in mijn koffer.']]],
  ['🆘 求助',[
-  ['請幫幫我！','Please help me!','Help me, alstublieft!'],['我的手機／錢包被偷了','My phone / wallet was stolen.','Mijn telefoon / portemonnee is gestolen.'],['請叫救護車','Please call an ambulance.','Bel alstublieft een ambulance.'],['警察局在哪裡？','Where is the police station?','Waar is het politiebureau?'],['我迷路了，可以幫我看地圖嗎？','I am lost. Could you help me with the map?','Ik ben verdwaald. Kunt u me helpen met de kaart?'],['最近的藥局在哪裡？','Where is the nearest pharmacy?','Waar is de dichtstbijzijnde apotheek?'],['我需要聯絡台灣代表處','I need to contact the Taipei Representative Office.','Ik moet contact opnemen met het Taipei Vertegenwoordigingskantoor.']]],
+  ['請幫幫我！','Please help me!','Help me, alstublieft!'],['我的手機／錢包被偷了','My phone / wallet was stolen.','Mijn telefoon / portemonnee is gestolen.'],['請叫救護車','Please call an ambulance.','Bel alstublieft een ambulance.'],['警察局在哪裡？','Where is the police station?','Waar is het politiebureau?'],['我迷路了，可以幫我看地圖嗎？','I am lost. Could you help me with the map?','Ik ben verdwaald. Kunt u me helpen met de kaart?'],['最近的藥局在哪裡？','Where is the nearest pharmacy?','Waar is de dichtstbijzijnde apotheek?'],['我需要聯絡台灣代表處','I need to contact the Taipei Representative Office.','Ik moet contact opnemen met het Taipei Vertegenwoordigingskantoor.'],['我身體不舒服','I do not feel well.','Ik voel me niet goed.'],['我需要看醫生','I need a doctor.','Ik heb een dokter nodig.']]],
  ['📍 地址',[
   ['根特萬豪（給司機看）','Ghent Marriott Hotel\nKorenlei 10, 9000 Gent','Ghent Marriott Hotel\nKorenlei 10, 9000 Gent'],['Hotel2Stay（給司機看）','Hotel2Stay\nTempelhofstraat 2, Amsterdam','Hotel2Stay\nTempelhofstraat 2, Amsterdam'],['阿姆斯特丹萬豪（給司機看）','Amsterdam Marriott Hotel\nStadhouderskade 12, Amsterdam','Amsterdam Marriott Hotel\nStadhouderskade 12, Amsterdam'],['史基浦機場','Amsterdam Airport Schiphol','Amsterdam Airport Schiphol'],['根特車站','Gent-Sint-Pieters station','Gent-Sint-Pieters station']]],
 ];
 function vTalk(){
+  const C=PHR[U.pc??0][1];
+  const line=(j,l,t)=>`<button class="pl ${U.pspk===j+'|'+l?'spk':''}" data-act="psay" data-id="${j}|${l}"><em>${l==='en'?'🇬🇧 英':'🇳🇱 荷'}</em><span>${esc(t).replace(/\n/g,'<br>')}</span><i>🔊</i></button>`;
   return `<section class="view sec" data-view="talk"><div class="sec-h"><h2>🗣️ 旅遊會話</h2></div>
-  <p style="margin:-6px 0 8px;font-size:13px;color:var(--muted)">點一句就直接唸出來；🔍 可以放大給對方看。布魯塞爾多講法文，用英文就好。</p>
-  <div class="plang"><button class="${(U.pl||'en')==='en'?'on':''}" data-act="plang" data-id="en">🇬🇧 English</button><button class="${U.pl==='nl'?'on':''}" data-act="plang" data-id="nl">🇳🇱 Nederlands</button></div>
-  <div class="phr"><div class="pcat">${PHR.map(([c],i)=>`<button class="${(U.pc??0)===i?'on':''}" data-act="pcat" data-id="${i}">${c}</button>`).join('')}</div>${PHR[U.pc??0][1].map(([zh,e1,n1],j)=>{const en=U.pl==='nl'?n1:e1;return `<div class="prw"><button class="prow ${U.pspk===j?'spk':''}" data-act="psay" data-id="${j}"><b>${esc(zh)}</b><span>${esc(en).replace(/\n/g,'<br>')}</span><i>🔊</i></button><button class="pzoom" data-act="pbig" data-id="${j}" aria-label="放大">🔍</button></div>`}).join('')}</div>
-  ${U.pbig!=null?(()=>{const [zh,e1,n1]=PHR[U.pc??0][1][U.pbig];const en=U.pl==='nl'?n1:e1;return `<div class="pbig"><button class="pclose" data-act="pclose">✕ 關閉</button><div class="pen">${esc(en).replace(/\n/g,'<br>')}</div><div class="pzh">${esc(zh)}</div><button class="pspk" data-act="pspk">🔊 唸出來</button></div>`})():''}
+  <p style="margin:-6px 0 8px;font-size:13px;color:var(--muted)">按英文或荷文那一行就直接唸出來；🔍 放大給對方看。比利時布魯塞爾多講法文，用英文就好。</p>
+  <div class="phr"><div class="pcat">${PHR.map(([c],i)=>`<button class="${(U.pc??0)===i?'on':''}" data-act="pcat" data-id="${i}">${c}</button>`).join('')}</div>${C.map(([zh,e1,n1],j)=>`<div class="pcard"><b>${esc(zh)}</b><button class="pz" data-act="pbig" data-id="${j}" aria-label="放大">🔍</button>${line(j,'en',e1)}${e1===n1?'':line(j,'nl',n1)}</div>`).join('')}</div>
+  ${U.pbig!=null&&C[U.pbig]?(()=>{const [zh,e1,n1]=C[U.pbig];return `<div class="pbig"><button class="pclose" data-act="pclose">✕ 關閉</button><div class="pzh">${esc(zh)}</div><div class="pen">${esc(e1).replace(/\n/g,'<br>')}</div><button class="pspk" data-act="pspk" data-id="en">🔊 唸英文</button>${e1===n1?'':`<div class="pen" style="margin-top:14px">${esc(n1).replace(/\n/g,'<br>')}</div><button class="pspk" data-act="pspk" data-id="nl">🔊 唸荷文</button>`}</div>`})():''}
   </section>`;
 }
 function vTips(){
@@ -892,8 +914,8 @@ document.addEventListener('click',e=>{
   else if(a==='pcat'){U.pc=+id;U.pbig=null;render();}
   else if(a==='pbig'){U.pbig=+id;render();}
   else if(a==='pclose'){U.pbig=null;try{speechSynthesis.cancel()}catch(e){}render();}
-  else if(a==='psay'){const j=+id;try{const nl=U.pl==='nl';let t=PHR[U.pc??0][1][j][nl?2:1].replace(/\n/g,'. ').replace(/ \/ /g,nl?' of ':' or ');const u=new SpeechSynthesisUtterance(t);u.lang=nl?'nl-NL':'en-GB';u.rate=.85;u.onend=()=>{if(U.pspk===j){U.pspk=null;render();}};speechSynthesis.cancel();U.pspk=j;render();speechSynthesis.speak(u);}catch(e){toast('這支手機不支援朗讀');}}
-  else if(a==='pspk'){try{const nl=U.pl==='nl';let en=PHR[U.pc??0][1][U.pbig][nl?2:1].replace(/\n/g,'. ');en=en.replace(/ \/ /g,nl?' of ':' or ');const u=new SpeechSynthesisUtterance(en);u.lang=nl?'nl-NL':'en-GB';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){toast('這支手機不支援朗讀');}}
+  else if(a==='psay'){const [js,l]=String(id).split('|');const j=+js;try{const nl=l==='nl';let t=PHR[U.pc??0][1][j][nl?2:1].replace(/\n/g,'. ').replace(/ \/ /g,nl?' of ':' or ');const u=new SpeechSynthesisUtterance(t);u.lang=nl?'nl-NL':'en-GB';u.rate=.85;const key=j+'|'+l;u.onend=()=>{if(U.pspk===key){U.pspk=null;render();}};speechSynthesis.cancel();U.pspk=key;render();speechSynthesis.speak(u);}catch(e){toast('這支手機不支援朗讀');}}
+  else if(a==='pspk'){try{const nl=id==='nl';let en=PHR[U.pc??0][1][U.pbig][nl?2:1].replace(/\n/g,'. ');en=en.replace(/ \/ /g,nl?' of ':' or ');const u=new SpeechSynthesisUtterance(en);u.lang=nl?'nl-NL':'en-GB';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){toast('這支手機不支援朗讀');}}
   else if(a==='hotel'){U.hotel=n;render();}
   else if(a==='hotelx'){U.hotel=null;try{speechSynthesis.cancel()}catch(e){}render();}
   else if(a==='hotelsay'){const d=(S.days||[]).find(x=>x.n===U.hotel);const h=hotelFor(d);if(h){try{const u=new SpeechSynthesisUtterance('Please take us to '+h.nm+', '+h.addr);u.lang=/Gent/.test(h.addr)?'nl-BE':'nl-NL';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}}
