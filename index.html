@@ -116,7 +116,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .lk.yp{background:#FFE3E3;color:#C8302F}
 .lk.buy{background:var(--orange-soft);color:var(--warn)}
 .chip{display:inline-block;font-size:11px;font-weight:700;padding:0 7px;border-radius:999px;margin-left:4px;vertical-align:2px;line-height:18px}
-.chip.unv{background:#F4EADC;color:#9A6A2E}.chip.book{background:var(--pink-soft);color:#D2496A}.chip.new{background:var(--mint-soft);color:#2F8A57}
+.chip.unv{background:#F4EADC;color:#9A6A2E}.chip.book{background:var(--pink-soft);color:#D2496A}.chip.new{background:var(--mint-soft);color:#2F8A57}.chip.done{background:#E6F6EC;color:#1E7A3C}button.chip.tg{border:0;font-family:inherit;cursor:pointer}
 .tools{display:none;gap:6px;margin-top:6px}
 body.editing .tools{display:flex}
 .tools button{border:0;border-radius:10px;padding:4px 10px;font-size:12.5px;background:var(--bg);color:var(--ink)}
@@ -449,7 +449,7 @@ function dayCard(d){
    </div></article>`;
 }
 function itemRow(n,i){
-  const tags=(i.tags||[]).map(t=>t==='unv'?'<span class="chip unv">未確認</span>':t==='book'?'<span class="chip book">要預訂</span>':t==='new'?'':'').join('');
+  const TG={unv:['unv','未確認'],cf:['done','✓ 已確認'],book:['book','要預訂'],booked:['done','✅ 已預訂']};const tags=(i.tags||[]).filter(t=>TG[t]).map(t=>CAN&&!U.book?`<button class="chip ${TG[t][0]} tg" data-act="tag" data-n="${n}" data-id="${i.id}|${t}" title="點一下切換">${TG[t][1]}</button>`:`<span class="chip ${TG[t][0]}">${TG[t][1]}</span>`).join('');
   const facts=[i.stay&&`⏱ 停留 ${esc(i.stay)}`,i.move&&`${mvIcon(i.move)} ${esc(i.move)}`,i.cost&&`💶 ${esc(i.cost)}`].filter(Boolean).map(x=>`<span>${x}</span>`).join('');
   const armed=U.armed===i.id;
   const showPic=false;
@@ -941,6 +941,7 @@ document.addEventListener('click',e=>{
       let nx=null;S.money.list=(S.money.list||[]).map(x=>x.id===id?(nx=Object.assign({},x,{desc:o.desc,amount:amt,cur:o.cur,cat:o.cat,date:o.date,who:o.who,note:o.note||''})):x);render();write('trip/money',{list:S.money.list});toast('改好了');if(nx)sheetPost({action:'upd',row:{...nx,twd:twdOf(nx)}});});}
   else if(a==='del-exp'){if(U.armed!==id){U.armed=id;render();return;}S.money.list=S.money.list.filter(x=>x.id!==id);U.armed=null;render();write('trip/money',{list:S.money.list});sheetPost({action:'del',id});}
   else if(a==='pic'){if(!ASSETS||!CAN){toast('需要編輯權限才能放照片');return;}picTarget={n,id};picker.value='';picker.click();}
+  else if(a==='tag'){const [iid,t]=id.split('|');const SW={book:'booked',booked:'book',unv:'cf',cf:'unv'};const d=dayDoc(n);d.items=d.items.map(i=>i.id===iid?Object.assign({},i,{tags:(i.tags||[]).map(x=>x===t?SW[t]:x)}):i);render();write('days/d'+n,{items:d.items});toast({book:'已標成「已預訂」',booked:'改回「要預訂」',unv:'已標成「已確認」',cf:'改回「未確認」'}[t]);}
   else if(a==='rm-pic'){const d=dayDoc(n),it=d.items.find(i=>i.id===id);const old=it.imgId;d.items=d.items.map(i=>i.id===id?Object.assign({},i,{img:'',imgId:''}):i);render();write('days/d'+n,{items:d.items}).then(()=>{if(old&&ASSETS)ASSETS.delete(old).catch(()=>{});});toast('已移除照片');}
   else if(a==='sheet-save'){const v=(document.getElementById('sheet-url')||{}).value||'';if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec/.test(v.trim())){toast('網址要是 https://script.google.com/macros/s/…/exec');return;}try{localStorage.setItem('nl-sheet-url',v.trim());}catch(e){}SH.st='';sheetPost({action:'bulk',rows:(S.money.list||[]).map(x=>({...x,twd:twdOf(x)}))});toast('已連結試算表');}
   else if(a==='sheet-sync'){sheetSync();}
